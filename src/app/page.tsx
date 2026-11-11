@@ -140,7 +140,7 @@ export default function HomePage() {
                     {dest.distanceFromVaranasi}
                   </span>
                   <span className="text-[11px] text-stone-500">
-                    GPS: {dest.coordinates.lat}°N, {dest.coordinates.lng}°E
+                    GPS: {dest.coordinates?.lat ?? 24.58}°N, {dest.coordinates?.lng ?? 83.08}°E
                   </span>
                 </div>
               </div>

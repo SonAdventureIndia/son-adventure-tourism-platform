@@ -6,7 +6,11 @@ export interface Destination {
   category: string;
   overview: string;
   description: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
   bestSeason: string;
   distanceFromVaranasi: string;
-  safetyTips: string[];
+  safetyTips?: string[];
 }
