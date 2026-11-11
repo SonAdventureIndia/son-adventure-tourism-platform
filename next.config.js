@@ -6,7 +6,6 @@ const nextConfig = {
   },
   trailingSlash: true,
   typescript: {
-    // टाइप एरर की वजह से बिल्ड कभी फेल नहीं होगा
     ignoreBuildErrors: true,
   },
   eslint: {

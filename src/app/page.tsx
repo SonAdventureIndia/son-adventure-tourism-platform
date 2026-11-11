@@ -10,43 +10,41 @@ import {
   Compass, 
   Footprints,
   Trees,
-  CheckCircle2
+  CheckCircle2,
+  ChevronRight,
+  MessageSquare,
+  Users,
+  Award
 } from 'lucide-react';
-import { VERIFIED_DESTINATIONS } from '@/data/destinations';
+import { VERIFIED_DESTINATIONS, VERIFIED_EXPERIENCES } from '@/data/destinations';
 
 export default function HomePage() {
-  const destinationImages: Record<string, string> = {
-    'salkhan-fossils': 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80',
-    'vijaygarh-fort': 'https://images.unsplash.com/photo-1599561046251-bfb9465b4c44?auto=format&fit=crop&w=1200&q=80',
-    'rihand-reservoir': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-    'mukha-falls': 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
-  };
-
   return (
-    <div className="editorial-gradient min-h-screen">
-      {/* HERO SECTION */}
-      <section className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-4xl mx-auto space-y-6">
-          <div className="inline-flex items-center space-x-2 bg-emerald-950/90 text-emerald-400 border border-emerald-800/80 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide shadow-inner">
+    <div className="min-h-screen">
+      {/* 1. CINEMATIC HERO SECTION */}
+      <section className="relative pt-20 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="inline-flex items-center space-x-2 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide backdrop-blur-md">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Discover The Hidden Heart of Uttar Pradesh</span>
+            <span>The Official Destination Discovery Platform for Sonbhadra, U.P.</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
-            Ancient Stones. Sacred Waters. <br className="hidden sm:inline" />
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
+            Prehistoric Stones. Sacred Waters. <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-200 bg-clip-text text-transparent">
-              Wild Sonbhadra.
+              Untamed Sonbhadra.
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-stone-300 max-w-2xl mx-auto leading-relaxed font-normal">
-            Step beyond conventional tourist trails. Experience 1.4-billion-year-old fossil beds, cliffside medieval citadels, and sprawling inland reservoirs on an official responsible travel platform.
+          <p className="text-base sm:text-lg text-stone-300 max-w-2xl mx-auto leading-relaxed">
+            From 1.4-billion-year-old fossil beds and 5th-century cliffside fortresses to Asia&apos;s massive reservoirs and Belan river cascades. Travel responsibly through Uttar Pradesh&apos;s wildest frontier.
           </p>
 
+          {/* DUAL ACTION BUTTONS */}
           <div className="pt-4 flex flex-wrap justify-center items-center gap-4">
             <Link 
               href="/destinations" 
-              className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold px-8 py-4 rounded-xl shadow-xl shadow-emerald-950/60 transition active:scale-95 text-sm"
+              className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold px-8 py-4 rounded-xl shadow-xl shadow-emerald-950/70 transition active:scale-95 text-sm"
             >
               <span>Explore Verified Destinations</span>
               <ArrowRight className="w-4 h-4" />
@@ -60,40 +58,40 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* QUICK CREDIBILITY STATS */}
+          {/* METRIC PILLARS */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12 max-w-4xl mx-auto">
-            <div className="glass-panel p-4 rounded-xl text-center">
-              <span className="text-2xl sm:text-3xl font-black text-emerald-400">1.4B+</span>
-              <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-semibold">Years Fossil Age</p>
+            <div className="bg-stone-900/80 p-5 rounded-2xl border border-stone-800 backdrop-blur-sm">
+              <span className="text-3xl font-black text-emerald-400">1.4B+</span>
+              <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-bold">Years Fossil Age</p>
             </div>
-            <div className="glass-panel p-4 rounded-xl text-center">
-              <span className="text-2xl sm:text-3xl font-black text-amber-300">5th Cent.</span>
-              <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-semibold">Vijaygarh Citadel</p>
+            <div className="bg-stone-900/80 p-5 rounded-2xl border border-stone-800 backdrop-blur-sm">
+              <span className="text-3xl font-black text-amber-300">5th Cent.</span>
+              <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-bold">Vijaygarh Citadel</p>
             </div>
-            <div className="glass-panel p-4 rounded-xl text-center">
-              <span className="text-2xl sm:text-3xl font-black text-teal-400">105 km</span>
-              <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-semibold">From Varanasi Airport</p>
+            <div className="bg-stone-900/80 p-5 rounded-2xl border border-stone-800 backdrop-blur-sm">
+              <span className="text-3xl font-black text-teal-400">105 km</span>
+              <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-bold">From Varanasi (VNS)</p>
             </div>
-            <div className="glass-panel p-4 rounded-xl text-center">
-              <span className="text-2xl sm:text-3xl font-black text-white">100%</span>
-              <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-semibold">Verified Coordinates</p>
+            <div className="bg-stone-900/80 p-5 rounded-2xl border border-stone-800 backdrop-blur-sm">
+              <span className="text-3xl font-black text-white">4 States</span>
+              <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-bold">Border Nexus (UP/MP/JH/CH)</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FEATURED DESTINATIONS SHOWCASE */}
-      <section className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
+      {/* 2. VERIFIED DESTINATIONS DIRECTORY TEASER */}
+      <section className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 border-t border-stone-900">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Curated Expedition Highlights</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">Verified Wonders of Sonbhadra</h2>
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Core Expedition Sites</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-1">Four Pillars of Sonbhadra</h2>
             <p className="text-stone-400 text-sm mt-2 max-w-xl">
-              Authentic geological, historical, and reservoir expeditions fact-checked against district geographical survey data.
+              Authentic geographical and historical documentation verified against district administrative survey records.
             </p>
           </div>
           <Link href="/destinations" className="mt-4 md:mt-0 text-sm font-semibold text-emerald-400 hover:text-emerald-300 flex items-center">
-            View all destinations &rarr;
+            View full directory &rarr;
           </Link>
         </div>
 
@@ -101,35 +99,30 @@ export default function HomePage() {
           {VERIFIED_DESTINATIONS.map((dest) => (
             <div 
               key={dest.id} 
-              className="group relative bg-stone-900/80 rounded-2xl border border-stone-800 overflow-hidden hover:border-emerald-500/50 transition duration-300 flex flex-col shadow-2xl"
+              className="group bg-stone-900/90 rounded-2xl border border-stone-800 overflow-hidden hover:border-emerald-500/50 transition duration-300 flex flex-col shadow-2xl"
             >
-              {/* IMAGE HEADER */}
-              <div className="relative h-64 w-full overflow-hidden">
+              <div className="relative h-72 w-full overflow-hidden">
                 <img 
-                  src={destinationImages[dest.id] || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'} 
+                  src={dest.imageUrl} 
                   alt={dest.name} 
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-700 brightness-90 group-hover:brightness-100" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
                 
                 <div className="absolute top-4 left-4 flex gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider bg-stone-900/90 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-full backdrop-blur-md">
+                  <span className="text-[11px] font-bold uppercase tracking-wider bg-stone-950/90 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-full backdrop-blur-md">
                     {dest.category}
                   </span>
                 </div>
 
-                <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                  <div>
-                    <h3 className="text-2xl font-bold text-white group-hover:text-emerald-300 transition">{dest.name}</h3>
-                    <p className="text-xs text-amber-200/90 font-medium flex items-center mt-1">
-                      <Clock className="w-3.5 h-3.5 mr-1" />
-                      Best Season: {dest.bestSeason}
-                    </p>
-                  </div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <h3 className="text-2xl font-bold text-white group-hover:text-emerald-300 transition">{dest.name}</h3>
+                  <p className="text-xs text-amber-200/90 font-medium flex items-center mt-1">
+                    <Clock className="w-3.5 h-3.5 mr-1" /> Best Season: {dest.bestSeason}
+                  </p>
                 </div>
               </div>
 
-              {/* CARD BODY */}
               <div className="p-6 flex-grow flex flex-col justify-between space-y-4">
                 <p className="text-xs text-emerald-400 font-semibold tracking-wide uppercase">{dest.tagline}</p>
                 <p className="text-sm text-stone-300 leading-relaxed">{dest.overview}</p>
@@ -139,9 +132,9 @@ export default function HomePage() {
                     <MapPin className="w-4 h-4 mr-1 text-emerald-400" />
                     {dest.distanceFromVaranasi}
                   </span>
-                  <span className="text-[11px] text-stone-500">
-                    GPS: {dest.coordinates?.lat ?? 24.58}°N, {dest.coordinates?.lng ?? 83.08}°E
-                  </span>
+                  <Link href={`/destinations#${dest.slug}`} className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center">
+                    Full Profile <ChevronRight className="w-4 h-4 ml-0.5" />
+                  </Link>
                 </div>
               </div>
             </div>
@@ -149,43 +142,123 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* RESPONSIBLE EXPEDITION CHARTER */}
-      <section className="max-w-4xl mx-auto py-20 px-4 text-center space-y-6">
-        <div className="inline-flex p-3 rounded-2xl bg-emerald-950/60 border border-emerald-800/60 text-emerald-400">
-          <ShieldCheck className="w-8 h-8" />
-        </div>
-        <h2 className="text-3xl font-extrabold text-white">The Son Adventure Responsible Travel Code</h2>
-        <p className="text-sm text-stone-400 max-w-2xl mx-auto leading-relaxed">
-          Sonbhadra&apos;s natural and geological environments are fragile. We urge every traveler, photographer, and researcher to commit to zero-impact exploration.
-        </p>
+      {/* 3. 3-DAY CURATED CIRCUIT TIMELINE */}
+      <section className="bg-stone-900/50 border-y border-stone-800/80 py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center space-y-3 mb-14">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Curated Travel Blueprint</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">The 3-Day Sonbhadra Discovery Circuit</h2>
+            <p className="text-stone-400 text-sm max-w-xl mx-auto">
+              How to experience pre-Cambrian geology, medieval citadels, and vast reservoir sunsets on a single journey from Varanasi.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-2xl mx-auto pt-4">
-          <div className="glass-panel p-4 rounded-xl flex items-start space-x-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-            <span className="text-xs text-stone-300">Strictly no collection or damaging of fossils at Salkhan Fossil Park.</span>
-          </div>
-          <div className="glass-panel p-4 rounded-xl flex items-start space-x-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-            <span className="text-xs text-stone-300">Carry out all non-biodegradable plastics and packaging.</span>
-          </div>
-          <div className="glass-panel p-4 rounded-xl flex items-start space-x-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-            <span className="text-xs text-stone-300">Stay strictly on demarcated paths on Vijaygarh Fort cliffs.</span>
-          </div>
-          <div className="glass-panel p-4 rounded-xl flex items-start space-x-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-            <span className="text-xs text-stone-300">Honor local tribal customs and respect residential privacy.</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-stone-900 p-6 rounded-2xl border border-stone-800 relative space-y-3">
+              <span className="text-xs font-black uppercase text-emerald-400 tracking-wider bg-emerald-950/80 px-2.5 py-1 rounded-md border border-emerald-800/60 inline-block">Day 1: Geo Heritage</span>
+              <h3 className="text-xl font-bold text-white">Salkhan Fossil Discovery</h3>
+              <p className="text-xs text-stone-400 leading-relaxed">
+                Depart Varanasi early morning via SH 5A. Arrive in Robertsganj and explore the 1.4-billion-year-old stromatolite beds at Salkhan. Afternoon walk through local cultural villages.
+              </p>
+              <span className="block text-[11px] text-stone-500 pt-2 border-t border-stone-800">Stay: Robertsganj Base Hotel</span>
+            </div>
+
+            <div className="bg-stone-900 p-6 rounded-2xl border border-stone-800 relative space-y-3">
+              <span className="text-xs font-black uppercase text-amber-400 tracking-wider bg-amber-950/80 px-2.5 py-1 rounded-md border border-amber-800/60 inline-block">Day 2: Citadel Trek</span>
+              <h3 className="text-xl font-bold text-white">Vijaygarh Fortress Ascent</h3>
+              <p className="text-xs text-stone-400 leading-relaxed">
+                Early morning ascent of Vijaygarh Fort stone ramparts. Discover 5th-century rock inscriptions and the perennial waters of Mira Sagar. Transfer south towards Renukoot.
+              </p>
+              <span className="block text-[11px] text-stone-500 pt-2 border-t border-stone-800">Stay: Renukoot / Pipri Rest Area</span>
+            </div>
+
+            <div className="bg-stone-900 p-6 rounded-2xl border border-stone-800 relative space-y-3">
+              <span className="text-xs font-black uppercase text-teal-400 tracking-wider bg-teal-950/80 px-2.5 py-1 rounded-md border border-teal-800/60 inline-block">Day 3: Sacred Waters</span>
+              <h3 className="text-xl font-bold text-white">Rihand & Mukha Falls</h3>
+              <p className="text-xs text-stone-400 leading-relaxed">
+                Sunrise viewpoint over Govind Ballabh Pant Sagar reservoir. Return journey via Belan Gorge to witness Mukha Falls cascades before heading back to Varanasi.
+              </p>
+              <span className="block text-[11px] text-stone-500 pt-2 border-t border-stone-800">Return: Varanasi Airport / Junction</span>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div className="pt-8">
-          <Link 
-            href="/contact" 
-            className="inline-flex items-center space-x-2 bg-stone-900 hover:bg-stone-800 border border-stone-700 text-stone-200 px-6 py-3 rounded-xl text-xs font-semibold transition"
-          >
-            <span>Have Questions or Want to Collaborate? Speak With Our Team</span>
-            <ArrowRight className="w-4 h-4 text-emerald-400" />
+      {/* 4. GUIDED TRAILS TEASER */}
+      <section className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Verified Local Experts</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-1">Guided Trails & Field Walks</h2>
+            <p className="text-stone-400 text-sm mt-2 max-w-xl">
+              Led exclusively by trained local eco-guides adhering to archaeological and forest department protocols.
+            </p>
+          </div>
+          <Link href="/experiences" className="mt-4 md:mt-0 text-sm font-semibold text-emerald-400 hover:text-emerald-300 flex items-center">
+            All experiences &rarr;
           </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {VERIFIED_EXPERIENCES.map((exp) => (
+            <div key={exp.id} className="bg-stone-900 rounded-2xl border border-stone-800 p-6 flex flex-col justify-between space-y-4">
+              <div>
+                <div className="flex justify-between items-center text-xs mb-2">
+                  <span className="text-emerald-400 font-semibold">{exp.category}</span>
+                  <span className="text-stone-400 bg-stone-800 px-2 py-0.5 rounded">{exp.duration}</span>
+                </div>
+                <h3 className="text-xl font-bold text-white">{exp.title}</h3>
+                <p className="text-xs text-stone-400 mt-2 leading-relaxed">{exp.description}</p>
+              </div>
+
+              <div className="pt-4 border-t border-stone-800 flex justify-between items-center">
+                <div>
+                  <span className="text-xs text-stone-500 block">Indicative Price</span>
+                  <span className="text-lg font-bold text-white">{exp.pricePerPerson}</span>
+                </div>
+                <a 
+                  href={`https://wa.me/917355053822?text=Hello%20Son%20Adventure,%20I%20am%20interested%20in%20${encodeURIComponent(exp.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-xl transition"
+                >
+                  Inquire
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 5. RESPONSIBLE TRAVEL CHARTER */}
+      <section className="bg-emerald-950/30 border-t border-emerald-900/40 py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-950 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-800">
+            <Trees className="w-6 h-6" />
+          </div>
+          <h2 className="text-3xl font-extrabold text-white">The Son Adventure Conservation Charter</h2>
+          <p className="text-sm text-stone-300 max-w-2xl mx-auto leading-relaxed">
+            Sonbhadra&apos;s fossil formations and forest catchments are irreplaceable natural treasures. Every visitor must respect strict zero-impact principles:
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-2xl mx-auto pt-4">
+            <div className="bg-stone-900/90 p-4 rounded-xl border border-stone-800 flex items-start space-x-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <span className="text-xs text-stone-300">Never chip or extract rock samples at Salkhan Fossil Park.</span>
+            </div>
+            <div className="bg-stone-900/90 p-4 rounded-xl border border-stone-800 flex items-start space-x-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <span className="text-xs text-stone-300">Pack out 100% of non-biodegradable waste and plastic bottles.</span>
+            </div>
+            <div className="bg-stone-900/90 p-4 rounded-xl border border-stone-800 flex items-start space-x-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <span className="text-xs text-stone-300">Stick strictly to established stone trails on Vijaygarh cliffs.</span>
+            </div>
+            <div className="bg-stone-900/90 p-4 rounded-xl border border-stone-800 flex items-start space-x-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <span className="text-xs text-stone-300">Support verified local community guides and indigenous hospitality.</span>
+            </div>
+          </div>
         </div>
       </section>
     </div>
