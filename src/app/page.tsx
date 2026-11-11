@@ -13,26 +13,27 @@ import {
   CheckCircle2,
   ChevronRight,
   MessageSquare,
-  Users,
-  Award
+  Radio
 } from 'lucide-react';
 import { VERIFIED_DESTINATIONS, VERIFIED_EXPERIENCES } from '@/data/destinations';
+import LiveGeoCompass from '@/components/LiveGeoCompass';
+import InteractiveTripCalculator from '@/components/InteractiveTripCalculator';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen space-y-20 pb-20">
       {/* 1. CINEMATIC HERO SECTION */}
-      <section className="relative pt-20 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+      <section className="relative pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="inline-flex items-center space-x-2 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span>The Official Destination Discovery Platform for Sonbhadra, U.P.</span>
+            <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+            <span>Official Destination Discovery Platform • Sonbhadra, Uttar Pradesh</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
             Prehistoric Stones. Sacred Waters. <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-200 bg-clip-text text-transparent">
-              Untamed Sonbhadra.
+              Wild Sonbhadra.
             </span>
           </h1>
 
@@ -40,7 +41,6 @@ export default function HomePage() {
             From 1.4-billion-year-old fossil beds and 5th-century cliffside fortresses to Asia&apos;s massive reservoirs and Belan river cascades. Travel responsibly through Uttar Pradesh&apos;s wildest frontier.
           </p>
 
-          {/* DUAL ACTION BUTTONS */}
           <div className="pt-4 flex flex-wrap justify-center items-center gap-4">
             <Link 
               href="/destinations" 
@@ -58,8 +58,8 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* METRIC PILLARS */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12 max-w-4xl mx-auto">
+          {/* CREDIBILITY METRICS */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-10 max-w-4xl mx-auto">
             <div className="bg-stone-900/80 p-5 rounded-2xl border border-stone-800 backdrop-blur-sm">
               <span className="text-3xl font-black text-emerald-400">1.4B+</span>
               <p className="text-[11px] text-stone-400 uppercase tracking-widest mt-1 font-bold">Years Fossil Age</p>
@@ -80,8 +80,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. VERIFIED DESTINATIONS DIRECTORY TEASER */}
-      <section className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 border-t border-stone-900">
+      {/* 2. THE CROWN JEWEL: LIVE GEOLOCATION & COMPASS WIDGET */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <LiveGeoCompass />
+      </section>
+
+      {/* 3. VERIFIED DESTINATIONS DIRECTORY TEASER */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Core Expedition Sites</span>
@@ -142,7 +147,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. 3-DAY CURATED CIRCUIT TIMELINE */}
+      {/* 4. INTERACTIVE BUDGET & TRAVEL CALCULATOR */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <InteractiveTripCalculator />
+      </section>
+
+      {/* 5. 3-DAY CURATED CIRCUIT TIMELINE */}
       <section className="bg-stone-900/50 border-y border-stone-800/80 py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="text-center space-y-3 mb-14">
@@ -184,53 +194,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. GUIDED TRAILS TEASER */}
-      <section className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Verified Local Experts</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-1">Guided Trails & Field Walks</h2>
-            <p className="text-stone-400 text-sm mt-2 max-w-xl">
-              Led exclusively by trained local eco-guides adhering to archaeological and forest department protocols.
-            </p>
-          </div>
-          <Link href="/experiences" className="mt-4 md:mt-0 text-sm font-semibold text-emerald-400 hover:text-emerald-300 flex items-center">
-            All experiences &rarr;
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {VERIFIED_EXPERIENCES.map((exp) => (
-            <div key={exp.id} className="bg-stone-900 rounded-2xl border border-stone-800 p-6 flex flex-col justify-between space-y-4">
-              <div>
-                <div className="flex justify-between items-center text-xs mb-2">
-                  <span className="text-emerald-400 font-semibold">{exp.category}</span>
-                  <span className="text-stone-400 bg-stone-800 px-2 py-0.5 rounded">{exp.duration}</span>
-                </div>
-                <h3 className="text-xl font-bold text-white">{exp.title}</h3>
-                <p className="text-xs text-stone-400 mt-2 leading-relaxed">{exp.description}</p>
-              </div>
-
-              <div className="pt-4 border-t border-stone-800 flex justify-between items-center">
-                <div>
-                  <span className="text-xs text-stone-500 block">Indicative Price</span>
-                  <span className="text-lg font-bold text-white">{exp.pricePerPerson}</span>
-                </div>
-                <a 
-                  href={`https://wa.me/917355053822?text=Hello%20Son%20Adventure,%20I%20am%20interested%20in%20${encodeURIComponent(exp.title)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-xl transition"
-                >
-                  Inquire
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 5. RESPONSIBLE TRAVEL CHARTER */}
+      {/* 6. RESPONSIBLE TRAVEL CHARTER */}
       <section className="bg-emerald-950/30 border-t border-emerald-900/40 py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <div className="w-12 h-12 rounded-2xl bg-emerald-950 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-800">
