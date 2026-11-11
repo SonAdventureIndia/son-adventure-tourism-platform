@@ -6,7 +6,7 @@ export interface Destination {
   category: string;
   overview: string;
   description: string;
-  coordinates: {
+  coordinates?: {
     lat: number;
     lng: number;
   };
