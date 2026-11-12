@@ -1,79 +1,102 @@
-import { Mail, Phone, MapPin, MessageSquare, ShieldCheck, Clock, Send } from 'lucide-react';
+'use client';
+
+import React, { useState } from 'react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 export default function ContactPage() {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 5000);
+  };
+
   return (
-    <div className="max-w-4xl mx-auto py-16 px-4 sm:px-6 lg:px-8 space-y-12">
-      <div className="border-b border-stone-800 pb-8 space-y-3">
-        <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Official Helpdesk</span>
-        <h1 className="text-4xl sm:text-5xl font-black text-white">Contact & Expeditions Desk</h1>
-        <p className="text-stone-400 text-sm leading-relaxed">
-          Get in touch with the official Son Adventure team for customized travel itineraries, certified guide bookings, media inquiries, or operator registrations.
-        </p>
-      </div>
+    <div className="min-h-screen bg-[#fdfbf7] flex flex-col justify-between">
+      <div>
+        <Navbar />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* DIRECT CREDENTIALS */}
-        <div className="bg-stone-900 p-8 rounded-3xl border border-stone-800 space-y-6">
-          <h2 className="text-xl font-bold text-white">Verified Coordinates</h2>
-          
-          <div className="space-y-4 text-sm">
-            <div>
-              <span className="text-xs font-bold uppercase text-stone-500 tracking-wider block">Official Email</span>
-              <a href="mailto:son.doc.tourism@gmail.com" className="text-emerald-400 font-semibold text-base hover:underline">
-                son.doc.tourism@gmail.com
-              </a>
-            </div>
-
-            <div>
-              <span className="text-xs font-bold uppercase text-stone-500 tracking-wider block">Official Phone & WhatsApp</span>
-              <a href="tel:+917355053822" className="text-emerald-400 font-semibold text-base hover:underline">
-                +91 7355053822
-              </a>
-            </div>
-
-            <div>
-              <span className="text-xs font-bold uppercase text-stone-500 tracking-wider block">Headquarters Desk</span>
-              <span className="text-stone-300">Robertsganj, Sonbhadra District, Uttar Pradesh 231216</span>
-            </div>
-
-            <div>
-              <span className="text-xs font-bold uppercase text-stone-500 tracking-wider block">Desk Hours</span>
-              <span className="text-stone-300">08:00 AM – 08:00 PM IST (Daily)</span>
-            </div>
-          </div>
-
-          <div className="pt-2">
-            <a 
-              href="https://wa.me/917355053822?text=Hello%20Son%20Adventure%20Team,%20I%20have%20an%20inquiry%20regarding%20Sonbhadra%20Tourism" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-2xl w-full transition text-sm shadow-xl"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>Chat on WhatsApp Directly</span>
-            </a>
-          </div>
-        </div>
-
-        {/* GUIDELINES & PROTOCOL */}
-        <div className="bg-stone-900/60 p-8 rounded-3xl border border-stone-800 space-y-4 flex flex-col justify-between">
-          <div className="space-y-3">
-            <h3 className="text-lg font-bold text-white flex items-center">
-              <ShieldCheck className="w-5 h-5 mr-2 text-emerald-400" /> Travel Advisory Notice
-            </h3>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              Son Adventure verifies all information in accordance with regional forest, archaeological, and administrative regulations. We never recommend entering restricted biological zones without authorized local guides.
-            </p>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              For corporate expeditions, academic geology field-trips, or foreign national travel advisories, please email us with prior notice.
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+          <div className="space-y-2">
+            <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32] bg-white border border-stone-200 px-3 py-1 rounded-full">
+              Official Helpdesk
+            </span>
+            <h1 className="text-3xl sm:text-5xl font-serif font-black text-[#0a1410]">
+              Contact & Inquiry Desk
+            </h1>
+            <p className="text-xs sm:text-sm text-stone-600 max-w-2xl font-sans">
+              Connect directly with our regional coordinators for customized trip planning, local guide verification, or group bookings.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-stone-950 border border-stone-800 text-[11px] text-stone-400">
-            <strong>Emergency Contact:</strong> Dial +91 7355053822 or message via WhatsApp for on-ground assistance between Robertsganj and Renukoot.
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Credentials Card */}
+            <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 font-mono text-xs">
+              <h3 className="font-serif font-bold text-lg text-[#0a1410]">Verified Office Coordinates</h3>
+              
+              <div className="space-y-3 pt-2">
+                <div className="p-3 bg-stone-50 rounded-xl border border-stone-200">
+                  <span className="text-stone-400 block uppercase text-[10px] font-bold">Official Phone & WhatsApp</span>
+                  <a href="tel:+917355053822" className="text-sm font-bold text-[#0a1410] hover:text-[#c85a32]">+91 73550 53822</a>
+                </div>
+
+                <div className="p-3 bg-stone-50 rounded-xl border border-stone-200">
+                  <span className="text-stone-400 block uppercase text-[10px] font-bold">Official Email</span>
+                  <a href="mailto:son.doc.tourism@gmail.com" className="text-sm font-bold text-[#0a1410] hover:text-[#c85a32]">son.doc.tourism@gmail.com</a>
+                </div>
+
+                <div className="p-3 bg-stone-50 rounded-xl border border-stone-200">
+                  <span className="text-stone-400 block uppercase text-[10px] font-bold">Base Office</span>
+                  <p className="text-stone-700 text-xs">Robertsganj, Sonbhadra District, Uttar Pradesh 231216, India</p>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <a 
+                  href="https://wa.me/917355053822?text=Hello%20Son%20Adventure,%20I%20have%20an%20inquiry%20regarding%20Sonbhadra%20Tours."
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-full bg-[#25D366] hover:bg-[#1fa851] text-white py-3 px-4 rounded-xl font-bold text-center block transition shadow-sm"
+                >
+                  <i className="fab fa-whatsapp mr-1.5" /> Direct WhatsApp Chat
+                </a>
+              </div>
+            </div>
+
+            {/* Inquiry Form */}
+            <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-3">
+              <h3 className="font-serif font-bold text-lg text-[#0a1410]">Send an Inquiry</h3>
+              {submitted ? (
+                <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl text-xs font-mono">
+                  ✓ Thank you! Your inquiry has been received. Our team will contact you within 24 hours.
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-3 text-xs font-mono">
+                  <div>
+                    <label className="text-stone-500 font-bold uppercase block mb-1">Your Name</label>
+                    <input type="text" required placeholder="Full Name" className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2.5 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-stone-500 font-bold uppercase block mb-1">Email or Phone</label>
+                    <input type="text" required placeholder="Email / Phone number" className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2.5 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-stone-500 font-bold uppercase block mb-1">Message / Travel Dates</label>
+                    <textarea rows={4} required placeholder="Where do you want to explore?" className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2.5 outline-none"></textarea>
+                  </div>
+                  <button type="submit" className="w-full bg-[#0a1410] hover:bg-[#1b432e] text-white font-bold py-2.5 rounded-xl uppercase tracking-wider transition">
+                    Send Inquiry
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

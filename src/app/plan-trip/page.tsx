@@ -1,69 +1,89 @@
-import { Plane, Train, Car, ShieldAlert, CheckCircle, MapPin, Calendar } from 'lucide-react';
+'use client';
+
+import React from 'react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 export default function PlanTripPage() {
   return (
-    <div className="max-w-5xl mx-auto py-16 px-4 sm:px-6 lg:px-8 space-y-12">
-      <div className="border-b border-stone-800 pb-8 space-y-3">
-        <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Visitor Logistics</span>
-        <h1 className="text-4xl sm:text-5xl font-black text-white">How to Reach Sonbhadra</h1>
-        <p className="text-stone-400 text-sm max-w-2xl leading-relaxed">
-          Comprehensive transportation, best seasonal windows, and safety advisories for domestic and international travelers visiting from Varanasi.
-        </p>
+    <div className="min-h-screen bg-[#fdfbf7] flex flex-col justify-between">
+      <div>
+        <Navbar />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+          <div className="space-y-2">
+            <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32] bg-white border border-stone-200 px-3 py-1 rounded-full">
+              Transit & Logistics Dossier
+            </span>
+            <h1 className="text-3xl sm:text-5xl font-serif font-black text-[#0a1410]">
+              How to Reach Sonbhadra
+            </h1>
+            <p className="text-xs sm:text-sm text-stone-600 max-w-2xl font-sans">
+              Practical transportation logistics, verified fares, and railheads for domestic and foreign visitors arriving via Varanasi or Prayagraj.
+            </p>
+          </div>
+
+          {/* Transit options */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+            <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm space-y-2.5">
+              <span className="text-2xl">✈️</span>
+              <h3 className="font-bold text-base text-[#0a1410] font-serif">By Flight (Air)</h3>
+              <p className="text-stone-600 font-sans leading-relaxed">
+                Nearest airport: <strong>Lal Bahadur Shastri International Airport (VNS)</strong> in Babatpur, Varanasi (~105 km to Robertsganj).
+              </p>
+              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                <div><strong>Pre-Paid Taxi:</strong> ₹2,800 – ₹3,500</div>
+                <div><strong>Travel Duration:</strong> ~2.5 hrs via SH 5A</div>
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm space-y-2.5">
+              <span className="text-2xl">🚆</span>
+              <h3 className="font-bold text-base text-[#0a1410] font-serif">By Train (Railways)</h3>
+              <p className="text-stone-600 font-sans leading-relaxed">
+                Key stations: <strong>Sonbhadra (Robertsganj - LUSA/CUK)</strong>, <strong>Chopan</strong>, <strong>Renukoot</strong>.
+              </p>
+              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                <div><strong>Major Junction:</strong> Pt. Deen Dayal Upadhyaya (DDU)</div>
+                <div><strong>Alternative Junction:</strong> Mirzapur (MZP)</div>
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm space-y-2.5">
+              <span className="text-2xl">🚗</span>
+              <h3 className="font-bold text-base text-[#0a1410] font-serif">By Road & Bus</h3>
+              <p className="text-stone-600 font-sans leading-relaxed">
+                4-lane Varanasi-Shaktinagar Expressway corridor (State Highway 5A / NH 39).
+              </p>
+              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                <div><strong>UPSRTC Buses:</strong> Every 30 mins from Varanasi Cantt</div>
+                <div><strong>Bus Fare:</strong> ₹120 – ₹240 (Ordinary to AC)</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Seasonal Calendar */}
+          <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <h3 className="text-xl font-bold font-serif text-[#0a1410]">Best Seasonal Travel Windows</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
+              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1">
+                <strong className="block text-sm">Winter (Oct to Mar) · Peak</strong>
+                <p className="text-[11px] font-sans">Mild daytime temperatures (15°C–25°C). Ideal for Salkhan fossil explorations, rock climbing, and Vijaygarh ascents.</p>
+              </div>
+              <div className="p-4 rounded-xl bg-sky-50 border border-sky-200 text-sky-950 space-y-1">
+                <strong className="block text-sm">Post-Monsoon (Aug to Oct)</strong>
+                <p className="text-[11px] font-sans">Best for Mukha Falls cascades. The Kaimur hills turn vibrant emerald green. Caution needed around river rapids.</p>
+              </div>
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 space-y-1">
+                <strong className="block text-sm">Summer (Apr to Jun)</strong>
+                <p className="text-[11px] font-sans">Hot dry winds (35°C–44°C). Recommended only for early dawn fort treks or dusk reservoir breezes at Rihand.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* TRANSIT MODES */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-stone-900 p-6 rounded-2xl border border-stone-800 space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-950 text-emerald-400 flex items-center justify-center">
-            <Plane className="w-5 h-5" />
-          </div>
-          <h2 className="text-lg font-bold text-white">By Air (Flight)</h2>
-          <p className="text-xs text-stone-300 leading-relaxed">
-            The primary gateway is <strong>Lal Bahadur Shastri International Airport (VNS)</strong> in Babatpur, Varanasi (approx. 105 km to Robertsganj). Pre-paid cabs and rental services operate directly from VNS to Sonbhadra.
-          </p>
-        </div>
-
-        <div className="bg-stone-900 p-6 rounded-2xl border border-stone-800 space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-950 text-amber-400 flex items-center justify-center">
-            <Train className="w-5 h-5" />
-          </div>
-          <h2 className="text-lg font-bold text-white">By Train (Railways)</h2>
-          <p className="text-xs text-stone-300 leading-relaxed">
-            Key district railheads are <strong>Sonbhadra (Robertsganj - LUSA/CUK)</strong> and <strong>Renukoot (RNQ)</strong>. Major high-speed junctions nearby include <strong>Pt. Deen Dayal Upadhyaya Jn (DDU)</strong> and <strong>Mirzapur (MZP)</strong>.
-          </p>
-        </div>
-
-        <div className="bg-stone-900 p-6 rounded-2xl border border-stone-800 space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-teal-950 text-teal-400 flex items-center justify-center">
-            <Car className="w-5 h-5" />
-          </div>
-          <h2 className="text-lg font-bold text-white">By Road (Highways)</h2>
-          <p className="text-xs text-stone-300 leading-relaxed">
-            Connected via the 4-lane <strong>Varanasi-Shaktinagar Expressway (SH 5A)</strong> and <strong>NH 39</strong>. Daily UPSRTC state transport air-conditioned and standard buses connect Varanasi Cantt, Prayagraj, and Mirzapur with Robertsganj.
-          </p>
-        </div>
-      </div>
-
-      {/* SEASONS CALENDAR */}
-      <div className="bg-stone-900 p-8 rounded-3xl border border-stone-800 space-y-4">
-        <h2 className="text-xl font-bold text-white flex items-center">
-          <Calendar className="w-5 h-5 mr-2 text-emerald-400" /> Optimal Visiting Seasons
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="p-4 rounded-xl bg-stone-950 border border-stone-800">
-            <span className="font-bold text-emerald-400 block mb-1">Winter (October to March)</span>
-            <p className="text-stone-300 leading-relaxed">Peak tourist season. Mild daytime temperatures (15°C - 26°C), ideal for Salkhan geological explorations and Vijaygarh hiking.</p>
-          </div>
-          <div className="p-4 rounded-xl bg-stone-950 border border-stone-800">
-            <span className="font-bold text-teal-400 block mb-1">Post-Monsoon (August to October)</span>
-            <p className="text-stone-300 leading-relaxed">Best for Mukha Falls and cascades. The Vindhyan hills turn vibrant emerald green. Caution needed around slippery trails.</p>
-          </div>
-          <div className="p-4 rounded-xl bg-stone-950 border border-stone-800">
-            <span className="font-bold text-amber-400 block mb-1">Summer (April to June)</span>
-            <p className="text-stone-300 leading-relaxed">Hot and dry (35°C - 44°C). Recommended only for dawn or dusk reservoir visits at Rihand with hydration precautions.</p>
-          </div>
-        </div>
-      </div>
+      <Footer />
     </div>
   );
 }
