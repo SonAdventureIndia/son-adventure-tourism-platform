@@ -10,7 +10,13 @@ module.exports = {
       colors: {
         forest: { 950: '#0a1410', 900: '#0e261a', 800: '#1b432e' },
         gold: { 400: '#e9c974', 500: '#d4a537', 600: '#a87d22' },
-        terracotta: { 600: '#c85a32', 700: '#ac4a26' }
+        canyon: { 500: '#d9653b', 600: '#c85a32', 700: '#ac4a26' },
+        sand: { 50: '#fdfbf7', 100: '#f8f5ee', 200: '#f1ebd9' }
+      },
+      fontFamily: {
+        serif: ['Fraunces', 'serif'],
+        sans: ['Manrope', 'sans-serif'],
+        mono: ['Space Grotesk', 'monospace']
       }
     },
   },
