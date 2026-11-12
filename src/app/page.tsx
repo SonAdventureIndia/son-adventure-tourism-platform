@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -8,11 +8,18 @@ import Footer from '@/components/Footer';
 const SONBHADRA_DATUM = { lat: 24.6856, lng: 83.0689 };
 
 export default function HomePage() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Sensory Jungle Controls
+  const [rainActive, setRainActive] = useState(true);
+  const [soundPlaying, setSoundPlaying] = useState(false);
+  const audioContextRef = useRef<any>(null);
+  const audioGainRef = useRef<any>(null);
+
+  // Modal States
   const [compassOpen, setCompassOpen] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
-  const [cmdOpen, setCmdOpen] = useState(false);
-  const [cmdSearch, setCmdSearch] = useState('');
-  
+
   // Real-Time GPS Telemetry
   const [distanceKm, setDistanceKm] = useState<number>(71);
   const [bearingDeg, setBearingDeg] = useState<number>(142);
@@ -25,19 +32,29 @@ export default function HomePage() {
   const [temp, setTemp] = useState<number | null>(24);
 
   // Map & Elevation Profile State
-  const [activePlace, setActivePlace] = useState('salkhan');
+  const [activePlace, setActivePlace] = useState('mukha');
 
-  // Multi-Step In-Page Booking Engine (No WhatsApp Redirect Hacks!)
+  // Multi-Step In-Page Booking Engine
   const [bookingStep, setBookingStep] = useState(1);
-  const [bookTrail, setBookTrail] = useState('Salkhan Deep-Time Geo-Walk');
+  const [bookTrail, setBookTrail] = useState('Mukha Falls Canyon Descent & Rainforest Walk');
   const [bookPax, setBookPax] = useState(2);
   const [bookDate, setBookDate] = useState('');
   const [bookGuideTier, setBookGuideTier] = useState('Certified Naturalist (+₹1,500)');
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
   const places: Record<string, any> = {
+    mukha: {
+      title: 'Mukha Falls & Belan River Gorge',
+      badge: 'Torrential Waterfall & Sandstone Canyon',
+      img: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
+      elevationProfile: 'Gorge Rim: 250m → Waterfall Basin: 210m (-40m Descent)',
+      gradient: 'Rocky Amphitheater Descent · Caution on wet stone',
+      desc: 'Cascading natural waterfalls carving deep shelves into the Belan River basin with prehistoric rock painting shelters.',
+      coords: '24.7142° N, 82.7811° E',
+      slug: '/destinations/mukha-waterfall'
+    },
     salkhan: {
-      title: 'Salkhan Fossil Park',
+      title: 'Salkhan Fossil Geo-Park',
       badge: 'Geological Wonder · 1.4B Years',
       img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80',
       elevationProfile: 'Base: 280m → Plateau: 315m (+35m Gain)',
@@ -65,20 +82,124 @@ export default function HomePage() {
       desc: 'Govind Ballabh Pant Sagar reservoir spanning the UP-MP border with pine-fringed sunset lookouts.',
       coords: '24.2044° N, 83.0336° E',
       slug: '/destinations/rihand-reservoir'
-    },
-    mukha: {
-      title: 'Mukha Falls & Belan Gorge',
-      badge: 'Tiered Sandstone Canyon',
-      img: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
-      elevationProfile: 'Gorge Rim: 250m → Waterfall Basin: 210m (-40m Descent)',
-      gradient: 'Rocky Amphitheater Descent · Caution on wet stone',
-      desc: 'Pristine cascades carving deep shelves into the Belan River basin with prehistoric rock shelters.',
-      coords: '24.7142° N, 82.7811° E',
-      slug: '/destinations/mukha-waterfall'
     }
   };
 
-  // Haversine & Great-Circle Bearing
+  // 1. Procedural Web-Audio Rainforest & Cascade Sound Engine (0 External MP3 Files Needed!)
+  const toggleSound = () => {
+    try {
+      if (!soundPlaying) {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioCtx();
+        audioContextRef.current = ctx;
+
+        // Generate white/pink noise buffer
+        const bufferSize = ctx.sampleRate * 2;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = (Math.random() * 2 - 1) * 0.4;
+        }
+
+        const whiteNoise = ctx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+        whiteNoise.loop = true;
+
+        // Lowpass filter to mimic rushing water & torrential rainfall
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 650;
+
+        const gainNode = ctx.createGain();
+        gainNode.gain.value = 0.18; // gentle natural volume
+        audioGainRef.current = gainNode;
+
+        whiteNoise.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        whiteNoise.start(0);
+        setSoundPlaying(true);
+      } else {
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+        }
+        setSoundPlaying(false);
+      }
+    } catch (e) {
+      console.warn('Audio synthesis restricted by browser');
+    }
+  };
+
+  // 2. Realistic Canvas Rain & Mist Drop Engine
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    let width = (canvas.width = canvas.offsetWidth);
+    let height = (canvas.height = canvas.offsetHeight);
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    // Raindrop Particle System
+    const drops: Array<{ x: number; y: number; speed: number; length: number; opacity: number; wind: number }> = [];
+    const dropCount = rainActive ? 180 : 35; // torrential rain vs clear mist
+
+    for (let i = 0; i < dropCount; i++) {
+      drops.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        speed: rainActive ? 18 + Math.random() * 12 : 3 + Math.random() * 4,
+        length: rainActive ? 18 + Math.random() * 16 : 2 + Math.random() * 4,
+        opacity: 0.25 + Math.random() * 0.5,
+        wind: rainActive ? -1.8 - Math.random() * 1.5 : 0.2
+      });
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw raindrops with soft trail and splash illusion
+      for (let i = 0; i < drops.length; i++) {
+        const d = drops[i];
+        ctx.beginPath();
+        ctx.strokeStyle = rainActive ? `rgba(200, 230, 255, ${d.opacity})` : `rgba(212, 165, 55, ${d.opacity * 0.4})`;
+        ctx.lineWidth = rainActive ? 1.4 : 1;
+        ctx.lineCap = 'round';
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x + d.wind * (d.length / 5), d.y + d.length);
+        ctx.stroke();
+
+        d.y += d.speed;
+        d.x += d.wind;
+
+        // Reset to top when hitting ground
+        if (d.y > height) {
+          d.y = -20;
+          d.x = Math.random() * (width + 100);
+        }
+      }
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [rainActive]);
+
+  // Haversine & GPS calculations
   const calcMath = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -93,7 +214,7 @@ export default function HomePage() {
   };
 
   const acquireLocation = () => {
-    setGpsStatus('Synchronizing with GPS satellites...');
+    setGpsStatus('Synchronizing satellite telemetry...');
     if (!navigator.geolocation) {
       setGpsStatus('GPS unsupported');
       return;
@@ -149,74 +270,96 @@ export default function HomePage() {
           onOpenSos={() => setSosModalOpen(true)} 
         />
 
-        {/* 1. CINEMATIC HERO SECTION */}
-        <header className="hero" id="home">
+        {/* 1. CINEMATIC MONSOON JUNGLE HERO (ALIVE CANVASES & SENSORY CONTROLS) */}
+        <header className="hero-jungle relative" id="home">
+          {/* Lush Rainforest & Waterfall Background Image */}
           <div 
-            className="hero-bg" 
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2400&auto=format&fit=crop')" }} 
+            className="hero-jungle-bg" 
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=2400&q=80')" }} 
           />
-          <div className="hero-overlay" />
+          
+          {/* Real Canvas Rain Falling Over Jungle */}
+          <canvas ref={canvasRef} className="rain-canvas" />
 
-          <div className="hero-inner">
-            <div className="hero-greeting">
-              <span className="w-2 h-2 rounded-full bg-gold-500 animate-ping inline-block" />
-              <span>Official Exploration Portal · {dateStr}</span>
+          {/* Atmospheric Mist & Vignette */}
+          <div className="mist-overlay" />
+
+          <div className="hero-jungle-content">
+            {/* Sensory Controls (Rain & Waterfall Ambience Toggle) */}
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <button 
+                onClick={() => setRainActive(!rainActive)}
+                className={`py-1.5 px-3.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition border flex items-center space-x-1.5 shadow-lg ${rainActive ? 'bg-cyan-950/80 text-cyan-300 border-cyan-500/50' : 'bg-stone-900/80 text-stone-300 border-white/20'}`}
+              >
+                <span>{rainActive ? '🌧️ Heavy Monsoon Rain: ON' : '☀️ Sunlit Mist: ON'}</span>
+              </button>
+
+              <button 
+                onClick={toggleSound}
+                className={`py-1.5 px-3.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition border flex items-center space-x-1.5 shadow-lg ${soundPlaying ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/50' : 'bg-stone-900/80 text-stone-300 border-white/20'}`}
+              >
+                <span>{soundPlaying ? '🔊 Jungle & Waterfall Ambience: Playing' : '🔇 Play Rainforest Ambience'}</span>
+              </button>
             </div>
 
-            <h1 className="hero-title">
-              Discover <br />
-              <em>Sonbhadra.</em> <br />
-              Ancient. Wild. <em>Alive.</em>
+            <div className="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider mb-3">
+              <i className="fas fa-water text-cyan-400" />
+              <span>Wilderness & Riverine Gateway · Sonbhadra, UP</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black text-white leading-[1.08] drop-shadow-md">
+              Ancient River Gorges. <br className="hidden sm:inline" />
+              <span className="text-[#e9c974] italic">Torrential Waterfalls. Real Wild.</span>
             </h1>
 
-            <div className="hero-suggest">
-              <div className="ico"><i className="fas fa-compass" /></div>
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] text-gold-400 uppercase font-mono font-bold tracking-wider">Telemetry Radar</span>
-                <strong className="text-xs sm:text-sm text-white">Salkhan Fossil Park · Optimal Daytime Visibility</strong>
-                <span className="text-[11px] text-emerald-400 font-mono mt-0.5">
-                  📍 Direct Satellite Vector: {distanceKm} km from Sonbhadra ({cardinalDir})
-                </span>
+            <div className="flex items-center space-x-3 bg-black/40 backdrop-blur-md border border-white/15 p-3 rounded-2xl max-w-lg my-4">
+              <div className="w-9 h-9 rounded-xl bg-[#d4a537] text-forest-950 flex items-center justify-center font-bold text-sm shrink-0">
+                <i className="fas fa-compass" />
+              </div>
+              <div className="text-xs">
+                <span className="text-amber-300 font-mono font-bold uppercase text-[10px] block">Live Satellite Navigation Vector</span>
+                <strong className="text-white">You are {distanceKm} km from Sonbhadra ({cardinalDir})</strong>
+                <span className="text-emerald-400 font-mono block text-[11px] mt-0.5">{gpsStatus}</span>
               </div>
             </div>
 
-            <p className="hero-desc">
-              Where 1.4-billion-year-old prebiotic fossils meet misty fortresses in the clouds. Untamed rivers carve ancient canyons through the Vindhyan basin. An official expedition into Uttar Pradesh’s wildest frontier.
+            <p className="text-sm text-stone-200 max-w-xl font-sans leading-relaxed drop-shadow">
+              Feel the misty spray of Mukha Falls, trek the sandstone canyon shelves of Belan river, and walk across 1.4-billion-year-old prebiotic stromatolite fossil beds under ancient Kaimur rains.
             </p>
 
-            <div className="flex flex-wrap gap-3">
-              <Link href="/destinations" className="btn-primary">
+            <div className="flex flex-wrap gap-3 pt-3">
+              <Link href="/destinations" className="bg-[#c85a32] hover:bg-[#ac4a26] text-white text-xs font-mono font-bold uppercase tracking-wider py-3 px-6 rounded-xl shadow-lg transition">
                 <span>Explore Destinations</span>
-                <i className="fas fa-arrow-right text-[10px]" />
+                <i className="fas fa-arrow-right ml-1.5 text-[10px]" />
               </Link>
-              <a href="#booking-engine" className="btn-ghost">
-                <i className="fas fa-calendar-check" />
+              <a href="#booking-engine" className="bg-forest-950/90 hover:bg-forest-900 text-white border border-white/20 text-xs font-mono font-bold uppercase tracking-wider py-3 px-6 rounded-xl transition backdrop-blur-md">
+                <i className="fas fa-calendar-check mr-1 text-gold-400" />
                 <span>Permit & Booking Engine</span>
               </a>
-              <button onClick={() => { setCompassOpen(true); acquireLocation(); }} className="btn-ghost">
-                <i className="fas fa-compass text-gold-400" />
-                <span>Live GPS Compass</span>
+              <button onClick={() => { setCompassOpen(true); acquireLocation(); }} className="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-mono font-bold uppercase tracking-wider py-3 px-5 rounded-xl transition backdrop-blur-md">
+                <i className="fas fa-location-crosshairs mr-1 text-amber-300" />
+                <span>Open Compass</span>
               </button>
             </div>
           </div>
 
           {/* HERO LIVE TELEMETRY BAR */}
-          <div className="hero-live">
+          <div className="hero-jungle-telemetry font-mono text-xs">
             <div className="hero-live-item">
-              <div className="text-[10px] font-mono uppercase text-stone-400 font-bold"><i className="fas fa-clock mr-1 text-gold-400" /> Sonbhadra Time</div>
-              <div className="font-serif font-black text-white text-base">{timeStr}</div>
+              <span className="text-stone-400 text-[10px] uppercase font-bold"><i className="fas fa-clock mr-1 text-gold-400" /> Sonbhadra Time</span>
+              <strong className="text-white text-sm font-serif">{timeStr}</strong>
             </div>
             <div className="hero-live-item">
-              <div className="text-[10px] font-mono uppercase text-stone-400 font-bold"><i className="fas fa-temperature-half mr-1 text-gold-400" /> Temperature</div>
-              <div className="font-serif font-black text-white text-base">{temp ? `${temp}°C` : '24°C'}</div>
+              <span className="text-stone-400 text-[10px] uppercase font-bold"><i className="fas fa-temperature-half mr-1 text-gold-400" /> Temperature</span>
+              <strong className="text-white text-sm font-serif">{temp ? `${temp}°C` : '24°C'}</strong>
             </div>
             <div className="hero-live-item">
-              <div className="text-[10px] font-mono uppercase text-stone-400 font-bold"><i className="fas fa-wind mr-1 text-gold-400" /> Air Quality</div>
-              <div className="font-mono font-bold text-emerald-400 text-sm">Good (PM2.5)</div>
+              <span className="text-stone-400 text-[10px] uppercase font-bold"><i className="fas fa-droplet mr-1 text-cyan-400" /> River Condition</span>
+              <strong className="text-cyan-300 text-sm">Full Cascade Flow</strong>
             </div>
             <div className="hero-live-item">
-              <div className="text-[10px] font-mono uppercase text-stone-400 font-bold"><i className="fas fa-satellite mr-1 text-gold-400" /> Satellite Radar</div>
-              <div className="font-mono font-bold text-amber-300 text-sm">{distanceKm} km ({cardinalDir})</div>
+              <span className="text-stone-400 text-[10px] uppercase font-bold"><i className="fas fa-satellite mr-1 text-gold-400" /> Satellite Radar</span>
+              <strong className="text-amber-300 text-sm">{distanceKm} km ({cardinalDir})</strong>
             </div>
           </div>
         </header>
@@ -225,35 +368,35 @@ export default function HomePage() {
         <div className="marquee">
           <div className="marquee-track">
             <div className="flex items-center space-x-3 text-xs font-mono font-bold text-[#0a1410] uppercase px-4">
-              <span>✦ Salkhan Stromatolites (1.4B Yrs)</span>
-              <span>✦ Vijaygarh Fortress (430m)</span>
-              <span>✦ Rihand Reservoir (GBP Sagar)</span>
-              <span>✦ Mukha Cascades</span>
-              <span>✦ Kaimur Wildlife Sanctuary</span>
-              <span>✦ Lakhaniya Prehistoric Cave Art</span>
+              <span>✦ Mukha River Falls</span>
+              <span>✦ Salkhan Prehistoric Strata (1.4B Yrs)</span>
+              <span>✦ Vijaygarh Fortress Citadel (430m)</span>
+              <span>✦ Rihand Inland Sea Reservoir</span>
+              <span>✦ Kaimur Wildlife Rainforest Belt</span>
+              <span>✦ Lakhaniya Prehistoric Cave Overhangs</span>
             </div>
             <div className="flex items-center space-x-3 text-xs font-mono font-bold text-[#0a1410] uppercase px-4">
-              <span>✦ Salkhan Stromatolites (1.4B Yrs)</span>
-              <span>✦ Vijaygarh Fortress (430m)</span>
-              <span>✦ Rihand Reservoir (GBP Sagar)</span>
-              <span>✦ Mukha Cascades</span>
-              <span>✦ Kaimur Wildlife Sanctuary</span>
-              <span>✦ Lakhaniya Prehistoric Cave Art</span>
+              <span>✦ Mukha River Falls</span>
+              <span>✦ Salkhan Prehistoric Strata (1.4B Yrs)</span>
+              <span>✦ Vijaygarh Fortress Citadel (430m)</span>
+              <span>✦ Rihand Inland Sea Reservoir</span>
+              <span>✦ Kaimur Wildlife Rainforest Belt</span>
+              <span>✦ Lakhaniya Prehistoric Cave Overhangs</span>
             </div>
           </div>
         </div>
 
-        {/* 3. INTERACTIVE 4 PILLARS & TRAIL ELEVATION PROFILER */}
+        {/* 3. FOUR EXPEDITION PILLARS & ELEVATION CROSS-SECTION */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
           <div className="space-y-1 mb-8">
             <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32] bg-white border border-stone-200 px-3 py-1 rounded-full">
-              Trail Telemetry & Elevation Cross-Section
+              Terrain Telemetry & Cross-Section
             </span>
             <h2 className="text-3xl sm:text-4xl font-serif font-black text-[#0a1410]">
               The Four Expedition Pillars
             </h2>
             <p className="text-xs sm:text-sm text-stone-600 font-sans">
-              Click any pillar to inspect the terrain elevation gradient, GPS coordinates, and access trails.
+              Click any pillar to inspect the terrain elevation gradient, waterfall drops, and GPS access coordinates.
             </p>
           </div>
 
@@ -306,7 +449,7 @@ export default function HomePage() {
                     <path d="M 0 60 Q 150 50 300 20 T 600 10 L 600 80 L 0 80 Z" fill="rgba(200, 90, 50, 0.15)" />
                     <path d="M 0 60 Q 150 50 300 20 T 600 10" fill="none" stroke="#c85a32" strokeWidth="2.5" />
                     <circle cx="300" cy="20" r="3" fill="#c85a32" />
-                    <text x="290" y="15" fill="#c85a32" fontSize="10" fontFamily="Space Grotesk">Peak</text>
+                    <text x="290" y="15" fill="#c85a32" fontSize="10" fontFamily="Space Grotesk">Summit/Drop</text>
                   </svg>
                 </div>
               </div>
@@ -314,7 +457,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 4. REAL IN-PAGE EXPEDITION BOOKING & PERMIT ENGINE (NO LAZY REDIRECTS) */}
+        {/* 4. REAL IN-PAGE EXPEDITION BOOKING & PERMIT ENGINE */}
         <section className="bg-white border-y border-stone-200 py-12" id="booking-engine">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
             <div className="text-center space-y-1">
@@ -342,7 +485,6 @@ export default function HomePage() {
               </div>
             ) : (
               <div className="bg-[#fdfbf7] p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
-                {/* Step indicator */}
                 <div className="flex justify-between items-center text-xs font-mono border-b border-stone-200 pb-4">
                   <span className={bookingStep === 1 ? 'font-bold text-[#c85a32]' : 'text-stone-400'}>1. Trail & Date</span>
                   <span>→</span>
@@ -356,10 +498,10 @@ export default function HomePage() {
                     <div>
                       <label className="text-stone-500 font-bold block mb-1">Select Trail</label>
                       <select value={bookTrail} onChange={(e) => setBookTrail(e.target.value)} className="w-full bg-white border border-stone-300 rounded-xl p-3 font-bold text-[#0a1410]">
+                        <option>Mukha Falls Canyon Descent & Rainforest Walk</option>
                         <option>Salkhan Deep-Time Geo-Walk</option>
                         <option>Vijaygarh Fort Sunrise Ascent</option>
                         <option>Rihand Lake Shoreline Expedition</option>
-                        <option>Mukha Falls Canyon Descent</option>
                       </select>
                     </div>
 
@@ -475,7 +617,7 @@ export default function HomePage() {
 
             <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
               <div>
-                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&q=80" alt="" className="h-44 w-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80" alt="" className="h-44 w-full object-cover" />
                 <div className="p-4 space-y-1.5">
                   <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">Travel Logistics</span>
                   <h3 className="font-bold text-base font-serif text-[#0a1410] leading-snug">Varanasi to Sonbhadra Road Trip & Fares Guide</h3>
@@ -529,7 +671,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <button onClick={acquireLocation} className="btn-primary w-full py-2">
+            <button onClick={acquireLocation} className="bg-[#c85a32] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl w-full">
               Re-Calibrate Satellites
             </button>
           </div>
