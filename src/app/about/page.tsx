@@ -1,12 +1,9 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-
-export const metadata = {
-  title: 'Founder & Mission · Neeraj Dwivedi · Son Adventure',
-  description: 'Founded in 2012 by Neeraj Dwivedi with a mission to develop safe, structured, and responsible adventure tourism in Sonbhadra, Uttar Pradesh.',
-};
 
 export default function AboutPage() {
   return (
@@ -34,7 +31,7 @@ export default function AboutPage() {
               <div className="rounded-2xl overflow-hidden border-4 border-amber-500/20 shadow-xl">
                 <img 
                   src="https://sonadventure.com/wp-content/uploads/2025/12/1000086797-1.jpg" 
-                  alt="Neeraj Dwivedi - Founder" 
+                  alt="Neeraj Dwivedi - Founder of Son Adventure" 
                   className="w-full h-80 object-cover object-top"
                   onError={(e: any) => {
                     e.target.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop";
