@@ -8,7 +8,7 @@ import Footer from '@/components/Footer';
 const SONBHADRA_DATUM = { lat: 24.6856, lng: 83.0689 };
 
 export default function HomePage() {
-  const [heroSpot, setHeroSpot] = useState<'salkhan' | 'vijaygarh' | 'rihand' | 'mukha'>('salkhan');
+  const [heroSpot, setHeroSpot] = useState<'salkhan' | 'vijaygarh' | 'rihand' | 'mukha' | 'veerlorik'>('salkhan');
   const [compassOpen, setCompassOpen] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
 
@@ -18,7 +18,6 @@ export default function HomePage() {
   const [cardinalDir, setCardinalDir] = useState<string>('SE');
   const [gpsStatus, setGpsStatus] = useState<string>('Live Satellite Radar Active');
   const [timeStr, setTimeStr] = useState('09:40 AM');
-  const [dateStr, setDateStr] = useState('Loading...');
   const [temp, setTemp] = useState<number | null>(24);
 
   // Active Map Spot
@@ -60,51 +59,26 @@ export default function HomePage() {
       bg: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=2400&q=80',
       elevation: '210m',
       desc: 'Spectacular cascades plunging into natural amphitheater sandstone shelves surrounded by prehistoric rock painting shelters.'
+    },
+    veerlorik: {
+      name: 'Veer Lorik Stone & Markundi Ghati',
+      tagline: 'Legendary Monolith of Eternal Love & Valour',
+      bg: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2400&q=80',
+      elevation: '360m',
+      desc: 'The iconic cleft monolith on Markundi Pass where folk hero Veer Lorik cleaved the rock in a single sword stroke.'
     }
   };
 
-  const places: Record<string, any> = {
-    salkhan: {
-      title: 'Salkhan Fossil Geo-Park',
-      badge: 'Geological Wonder · 1.4B Years',
-      img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80',
-      elevationProfile: 'Base: 280m → Plateau: 315m (+35m Gain)',
-      gradient: 'Gentle Walk · 1.2 km trail',
-      desc: 'Mesoproterozoic cyanobacterial stromatolites preserved intact in ancient Vindhyan sandstone beds.',
-      coords: '24.5833° N, 83.0833° E',
-      slug: '/destinations/salkhan-fossils'
-    },
-    vijaygarh: {
-      title: 'Vijaygarh Fort Citadel',
-      badge: '5th-Century Fortress in the Clouds',
-      img: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80',
-      elevationProfile: 'Base: 180m → Summit Bastion: 430m (+250m Gain)',
-      gradient: 'Technical Stair Climb · 500+ Hand-Cut Steps',
-      desc: 'Historic cliff citadel with ancient Gupta inscriptions, perennial reservoirs (Mira Sagar) & cave art.',
-      coords: '24.5772° N, 83.2104° E',
-      slug: '/destinations/vijaygarh-fort'
-    },
-    rihand: {
-      title: 'Rihand Dam & Inland Sea',
-      badge: 'Asia’s Immense Reservoir',
-      img: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1200&auto=format&fit=crop',
-      elevationProfile: 'Waterline: 275m MSL',
-      gradient: 'Flat Shoreline Trail & Kayak Routes',
-      desc: 'Govind Ballabh Pant Sagar reservoir spanning the UP-MP border with pine-fringed sunset lookouts.',
-      coords: '24.2044° N, 83.0336° E',
-      slug: '/destinations/rihand-reservoir'
-    },
-    mukha: {
-      title: 'Mukha Falls & Belan Gorge',
-      badge: 'Tiered Sandstone Canyon',
-      img: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
-      elevationProfile: 'Gorge Rim: 250m → Waterfall Basin: 210m (-40m Descent)',
-      gradient: 'Rocky Amphitheater Descent · Caution on wet stone',
-      desc: 'Cascading natural waterfalls carving deep shelves into the Belan River basin with prehistoric rock painting shelters.',
-      coords: '24.7142° N, 82.7811° E',
-      slug: '/destinations/mukha-waterfall'
-    }
-  };
+  const allDestinations = [
+    { id: 'salkhan', name: 'Salkhan Fossil Park', category: 'Geological (1.4B Yrs)', elevation: '315m', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80', link: '/destinations/salkhan-fossils' },
+    { id: 'vijaygarh', name: 'Vijaygarh Fort', category: '5th-Century Citadel', elevation: '430m', img: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80', link: '/destinations/vijaygarh-fort' },
+    { id: 'mukha', name: 'Mukha Falls (Belan)', category: 'River Gorge Cascade', elevation: '210m', img: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=800&q=80', link: '/destinations/mukha-waterfall' },
+    { id: 'rihand', name: 'Rihand Dam (GBP Sagar)', category: 'Inland Sea Reservoir', elevation: '275m', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80', link: '/destinations/rihand-reservoir' },
+    { id: 'veerlorik', name: 'Veer Lorik Stone (Eco Point)', category: 'Monolith Heritage', elevation: '360m', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80', link: '/destinations/veer-lorik-stone' },
+    { id: 'agori', name: 'Agori Island Fort', category: 'Tri-River Confluence', elevation: '220m', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80', link: '/destinations/agori-fort' },
+    { id: 'lakhaniya', name: 'Lakhaniya Dari Canyon', category: 'Prehistoric Rock Art', elevation: '260m', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80', link: '/destinations/lakhaniya-dari' },
+    { id: 'shivdwar', name: 'Shivdwar Valley Temple', category: '11th-Century Black Idol', elevation: '240m', img: 'https://images.unsplash.com/photo-1545126178-862cdb469409?auto=format&fit=crop&w=800&q=80', link: '/destinations/shivdwar-temple' }
+  ];
 
   const calcMath = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
@@ -148,7 +122,6 @@ export default function HomePage() {
     const timer = setInterval(() => {
       const now = new Date();
       setTimeStr(now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }));
-      setDateStr(now.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata', weekday: 'short', month: 'short', day: 'numeric' }));
     }, 1000);
 
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${SONBHADRA_DATUM.lat}&longitude=${SONBHADRA_DATUM.lng}&current=temperature_2m&timezone=Asia%2FKolkata`)
@@ -176,25 +149,27 @@ export default function HomePage() {
           onOpenSos={() => setSosModalOpen(true)} 
         />
 
-        {/* 1. CINEMATIC HERO WITH LIVE SPOT-SWITCHER HUD */}
-        <header className="hero-architect relative" id="home">
+        {/* 1. CINEMATIC HERO (WITH DYNAMIC SPOT SWITCHER HUD) */}
+        <header className="relative min-h-[92vh] flex items-center px-4 sm:px-6 lg:px-8 bg-[#081710] overflow-hidden" id="home">
           <div 
-            className="hero-architect-bg" 
+            className="absolute inset-0 z-0 bg-cover bg-center filter brightness-[0.42] saturate-[1.2] transition-all duration-700" 
             style={{ backgroundImage: `url('${heroSpots[heroSpot].bg}')` }} 
           />
-          <div className="hero-architect-overlay" />
+          <div className="absolute inset-0 z-1 bg-gradient-to-t from-[#081710] via-transparent to-[#081710]/40 pointer-events-none" />
 
-          <div className="hero-architect-content">
-            {/* SPOT SWITCHER BUTTONS (Directly in Hero) */}
-            <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="relative z-10 max-w-5xl mx-auto w-full pt-16 pb-28 space-y-4">
+            
+            {/* SPOT SWITCHER BUTTONS */}
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="text-[10px] font-mono uppercase font-bold text-stone-300 mr-1 hidden sm:inline">
                 Inspect Landmark:
               </span>
               {[
                 { id: 'salkhan', label: '🌋 Salkhan Fossils' },
-                { id: 'vijaygarh', label: '🏰 Vijaygarh Citadel' },
-                { id: 'rihand', label: '🛶 Rihand Reservoir' },
-                { id: 'mukha', label: '🌊 Mukha Waterfalls' },
+                { id: 'vijaygarh', label: '🏰 Vijaygarh Fort' },
+                { id: 'mukha', label: '🌊 Mukha Falls' },
+                { id: 'rihand', label: '🛶 Rihand Sea' },
+                { id: 'veerlorik', label: '⚔️ Veer Lorik Stone' }
               ].map(s => (
                 <button
                   key={s.id}
@@ -206,9 +181,9 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider">
               <i className="fas fa-mountain-sun text-amber-400" />
-              <span>Official Tourism Gateway · Sonbhadra, UP</span>
+              <span>Official Tourism Discovery · Sonbhadra, UP</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black text-white leading-[1.08] drop-shadow-md">
@@ -216,12 +191,13 @@ export default function HomePage() {
               <span className="text-[#e9c974] italic">{heroSpots[heroSpot].tagline}</span>
             </h1>
 
-            <div className="flex items-center space-x-3 bg-black/60 backdrop-blur-md border border-white/15 p-3 rounded-2xl max-w-lg my-4">
-              <div className="w-9 h-9 rounded-xl bg-[#d4a537] text-forest-950 flex items-center justify-center font-bold text-sm shrink-0">
+            {/* LIVE SATELLITE VECTOR CARD */}
+            <div className="flex items-center space-x-3 bg-black/60 backdrop-blur-md border border-white/15 p-3 rounded-2xl max-w-lg my-3">
+              <div className="w-9 h-9 rounded-xl bg-[#d4a537] text-[#081710] flex items-center justify-center font-bold text-sm shrink-0">
                 <i className="fas fa-location-dot" />
               </div>
               <div className="text-xs">
-                <span className="text-amber-300 font-mono font-bold uppercase text-[10px] block">Live Satellite Navigation Vector</span>
+                <span className="text-amber-300 font-mono font-bold uppercase text-[10px] block">Live Satellite Telemetry Vector</span>
                 <strong className="text-white">You are {distanceKm} km from Sonbhadra ({cardinalDir})</strong>
                 <span className="text-emerald-400 font-mono block text-[11px] mt-0.5">{gpsStatus}</span>
               </div>
@@ -231,130 +207,140 @@ export default function HomePage() {
               {heroSpots[heroSpot].desc}
             </p>
 
-            <div className="flex flex-wrap gap-3 pt-4">
-              <Link href="/destinations" className="btn-terracotta">
-                <span>Explore Destinations</span>
-                <i className="fas fa-arrow-right ml-1 text-[10px]" />
+            <div className="flex flex-wrap gap-3 pt-3">
+              <Link href="/destinations" className="bg-[#c85a32] hover:bg-[#ac4a26] text-white text-xs font-mono font-bold uppercase tracking-wider py-3 px-6 rounded-xl shadow-lg transition">
+                <span>Explore All 10+ Destinations</span>
+                <i className="fas fa-arrow-right ml-1.5 text-[10px]" />
               </Link>
-              <a href="#booking-engine" className="btn-forest bg-forest-950/90 border border-white/20">
-                <i className="fas fa-calendar-check mr-1 text-gold-400" />
-                <span>Permit & Booking Engine</span>
+              <a href="#founder" className="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-mono font-bold uppercase tracking-wider py-3 px-5 rounded-xl transition backdrop-blur-md">
+                <i className="fas fa-user-tie mr-1 text-gold-400" />
+                <span>Founder's Story</span>
               </a>
-              <button onClick={() => { setCompassOpen(true); acquireLocation(); }} className="btn-forest bg-white/10 border border-white/20">
+              <button onClick={() => { setCompassOpen(true); acquireLocation(); }} className="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-mono font-bold uppercase tracking-wider py-3 px-5 rounded-xl transition backdrop-blur-md">
                 <i className="fas fa-location-crosshairs mr-1 text-amber-300" />
-                <span>Open Compass</span>
+                <span>Live Compass</span>
               </button>
             </div>
           </div>
 
-          {/* HERO LIVE TELEMETRY BAR */}
-          <div className="hero-telemetry-strip font-mono text-xs">
-            <div className="text-center">
+          {/* TELEMETRY BAR */}
+          <div className="absolute bottom-0 left-0 right-0 z-10 grid grid-cols-2 sm:grid-cols-4 bg-[#081710]/90 backdrop-blur-md border-t border-white/10 p-3 text-center text-xs font-mono">
+            <div>
               <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-clock mr-1 text-gold-400" /> Sonbhadra Time</span>
-              <strong className="text-white text-sm font-serif">{timeStr}</strong>
+              <strong className="text-white text-sm font-serif">{timeStr} IST</strong>
             </div>
-            <div className="text-center">
+            <div>
               <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-temperature-half mr-1 text-gold-400" /> Temperature</span>
               <strong className="text-white text-sm font-serif">{temp ? `${temp}°C` : '24°C'}</strong>
             </div>
-            <div className="text-center">
-              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-mountain mr-1 text-emerald-400" /> Active Elevation</span>
+            <div>
+              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-mountain mr-1 text-emerald-400" /> Landmark Elevation</span>
               <strong className="text-emerald-300 text-sm">{heroSpots[heroSpot].elevation} MSL</strong>
             </div>
-            <div className="text-center">
-              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-satellite mr-1 text-gold-400" /> Satellite Radar</span>
+            <div>
+              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-compass mr-1 text-gold-400" /> Bearing Vector</span>
               <strong className="text-amber-300 text-sm">{distanceKm} km ({cardinalDir})</strong>
             </div>
           </div>
         </header>
 
-        {/* 2. INFINITE SCROLLING MARQUEE */}
-        <div className="bg-[#d4a537] py-2.5 overflow-hidden border-y border-[#a87d22]">
-          <div className="flex space-x-6 text-xs font-mono font-bold text-[#081710] uppercase whitespace-nowrap">
-            <span>✦ Salkhan Stromatolites (1.4B Yrs)</span>
-            <span>✦ Vijaygarh Fortress Citadel (430m)</span>
-            <span>✦ Rihand Inland Sea Reservoir</span>
-            <span>✦ Mukha River Cascades</span>
-            <span>✦ Kaimur Wildlife Sanctuary</span>
-            <span>✦ Lakhaniya Prehistoric Cave Overhangs</span>
-            <span>✦ Salkhan Stromatolites (1.4B Yrs)</span>
-            <span>✦ Vijaygarh Fortress Citadel (430m)</span>
-            <span>✦ Rihand Inland Sea Reservoir</span>
-          </div>
-        </div>
-
-        {/* 3. FOUR EXPEDITION PILLARS & ELEVATION CROSS-SECTION */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-          <div className="space-y-1 mb-8">
-            <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32] bg-white border border-stone-200 px-3 py-1 rounded-full">
-              Terrain Telemetry & Cross-Section
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-serif font-black text-[#081710]">
-              The Four Expedition Pillars
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-600 font-sans">
-              Click any pillar to inspect the terrain elevation gradient, waterfall drops, and GPS access coordinates.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            {/* PILLAR SELECTOR TABS */}
-            <div className="lg:col-span-5 space-y-3">
-              {Object.entries(places).map(([key, p]: any) => (
-                <div 
-                  key={key}
-                  onClick={() => setActivePlace(key)}
-                  className={`p-4 rounded-2xl border transition cursor-pointer flex justify-between items-center ${activePlace === key ? 'bg-white border-[#c85a32] shadow-md ring-2 ring-[#c85a32]/20' : 'bg-white/60 border-stone-200 hover:bg-white'}`}
-                >
-                  <div>
-                    <span className="text-[10px] font-mono uppercase font-bold text-[#c85a32] block">{p.badge}</span>
-                    <h3 className="font-bold text-base font-serif text-[#081710]">{p.title}</h3>
-                    <p className="text-xs text-stone-500 font-mono mt-0.5">{p.coords}</p>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-[#c85a32]">Inspect →</span>
-                </div>
-              ))}
+        {/* 2. FOUNDER'S TRIBUTE SECTION (NEERAJ DWIVEDI JI) */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14" id="founder">
+          <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-6 sm:p-10">
+            <div className="md:col-span-5 relative">
+              <div className="rounded-2xl overflow-hidden border-4 border-amber-500/20 shadow-xl">
+                {/* Neeraj Dwivedi ji photo inside rock cave */}
+                <img 
+                  src="https://sonadventure.com/wp-content/uploads/2025/12/1000086797-1.jpg" 
+                  alt="Neeraj Dwivedi - Founder of Son Adventure" 
+                  className="w-full h-80 object-cover object-top"
+                  onError={(e: any) => {
+                    e.target.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop";
+                  }}
+                />
+              </div>
+              <div className="absolute -bottom-3 -right-3 bg-[#081710] text-amber-400 font-mono text-[11px] font-bold py-1.5 px-3.5 rounded-xl shadow-lg border border-amber-500/30">
+                Estd. 2012
+              </div>
             </div>
 
-            {/* LIVE ELEVATION & TERRAIN HUD CARD */}
-            <div className="lg:col-span-7 pro-card p-6 sm:p-8 space-y-4">
-              <div className="h-48 rounded-2xl overflow-hidden relative">
-                <img src={places[activePlace].img} alt={places[activePlace].title} className="w-full h-full object-cover" />
-                <span className="absolute bottom-3 left-3 bg-[#081710]/90 text-white font-mono text-[10px] font-bold px-2.5 py-1 rounded-md">
-                  Elevation: {places[activePlace].elevationProfile}
-                </span>
+            <div className="md:col-span-7 space-y-4">
+              <div className="inline-flex items-center space-x-2 text-xs font-mono font-bold uppercase text-[#c85a32] bg-orange-50 border border-orange-200 px-3 py-1 rounded-full">
+                <i className="fas fa-award" />
+                <span>The Pioneer Behind Son Adventure</span>
+              </div>
+              
+              <h2 className="text-3xl sm:text-4xl font-serif font-black text-[#081710]">
+                Neeraj Dwivedi
+              </h2>
+              <p className="text-xs font-mono text-stone-500 -mt-2">
+                Founder & Visionary · Son Adventure Tours & Eco Tourism
+              </p>
+
+              <div className="space-y-3 text-xs sm:text-sm text-stone-700 leading-relaxed font-sans pt-1">
+                <p>
+                  Established in 2012 by <strong>Mr. Neeraj Kumar Dwivedi</strong>, Son Adventure was born with a pioneering mission: to transform the unexplored, ancient landscapes of Sonbhadra into structured, safe, and world-class adventure spaces.
+                </p>
+                <p>
+                  With a rare blend of legal discipline, deep outdoor experience, and passion for the Vindhya-Son valley heritage, Neeraj ji has spent over a decade documenting prehistoric cave art, mapping mountain trails, and training local tribal youths as certified naturalists.
+                </p>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold font-serif text-[#081710]">{places[activePlace].title}</h3>
-                  <Link href={places[activePlace].slug} className="text-xs font-mono font-bold text-[#c85a32] hover:underline">
-                    Read Dedicated Dossier →
-                  </Link>
-                </div>
-                <p className="text-xs text-stone-600 leading-relaxed font-sans">{places[activePlace].desc}</p>
-              </div>
-
-              {/* ELEVATION CROSS-SECTION CHART */}
-              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
-                <div className="flex justify-between text-xs font-mono">
-                  <span className="font-bold text-[#081710]">Trail Elevation Cross-Section:</span>
-                  <span className="text-stone-500">{places[activePlace].gradient}</span>
-                </div>
-                <div className="h-16 w-full">
-                  <svg className="w-full h-full" viewBox="0 0 600 80" preserveAspectRatio="none">
-                    <path d="M 0 60 Q 150 50 300 20 T 600 10 L 600 80 L 0 80 Z" fill="rgba(200, 90, 50, 0.15)" />
-                    <path d="M 0 60 Q 150 50 300 20 T 600 10" fill="none" stroke="#c85a32" strokeWidth="2.5" />
-                    <circle cx="300" cy="20" r="3" fill="#c85a32" />
-                    <text x="290" y="15" fill="#c85a32" fontSize="10" fontFamily="Space Grotesk">Peak</text>
-                  </svg>
-                </div>
+              <div className="pt-2 flex flex-wrap gap-4 text-xs font-mono">
+                <Link href="/about" className="bg-[#081710] hover:bg-[#112d1f] text-white font-bold py-2.5 px-5 rounded-xl transition">
+                  Read Full Mission Charter →
+                </Link>
+                <a href="tel:+917355053822" className="text-[#c85a32] font-bold flex items-center space-x-1.5 pt-2 hover:underline">
+                  <i className="fas fa-phone" />
+                  <span>Direct Desk: +91 73550 53822</span>
+                </a>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 4. REAL IN-PAGE EXPEDITION BOOKING & PERMIT ENGINE */}
+        {/* 3. 10+ DESTINATIONS DIRECTORY PREVIEW */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10" id="destinations">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-2">
+            <div>
+              <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32] bg-white border border-stone-200 px-3 py-1 rounded-full">
+                Complete Field Catalog
+              </span>
+              <h2 className="text-3xl font-serif font-black text-[#081710] mt-1">
+                Explore All Sonbhadra Wonders
+              </h2>
+            </div>
+            <Link href="/destinations" className="text-xs font-mono font-bold text-[#c85a32] hover:underline">
+              View Detailed Directory →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {allDestinations.map((d) => (
+              <div key={d.id} className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                  <div className="h-44 relative overflow-hidden">
+                    <img src={d.img} alt={d.name} className="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                    <span className="absolute top-2.5 left-2.5 bg-[#081710]/90 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded">
+                      {d.elevation}
+                    </span>
+                  </div>
+                  <div className="p-4 space-y-1">
+                    <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">{d.category}</span>
+                    <h3 className="text-base font-bold font-serif text-[#081710]">{d.name}</h3>
+                  </div>
+                </div>
+                <div className="p-4 pt-0">
+                  <Link href={d.link} className="text-xs font-mono font-bold text-[#c85a32] hover:underline block pt-2 border-t border-stone-100">
+                    Inspect Dossier →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 4. REAL IN-PAGE BOOKING ENGINE */}
         <section className="bg-white border-y border-stone-200 py-12" id="booking-engine">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
             <div className="text-center space-y-1">
@@ -399,6 +385,7 @@ export default function HomePage() {
                         <option>Vijaygarh Fort Sunrise Ascent</option>
                         <option>Rihand Lake Shoreline Expedition</option>
                         <option>Mukha Falls Canyon Descent</option>
+                        <option>Veer Lorik Monolith & Markundi Pass</option>
                       </select>
                     </div>
 
@@ -413,7 +400,7 @@ export default function HomePage() {
                     </div>
 
                     <div className="sm:col-span-3 pt-3 flex justify-end">
-                      <button onClick={() => setBookingStep(2)} className="btn-terracotta">
+                      <button onClick={() => setBookingStep(2)} className="bg-[#c85a32] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl">
                         Next: Guide & Forest Permit →
                       </button>
                     </div>
@@ -438,7 +425,7 @@ export default function HomePage() {
 
                     <div className="flex justify-between pt-2">
                       <button onClick={() => setBookingStep(1)} className="text-stone-500 font-bold">← Back</button>
-                      <button onClick={() => setBookingStep(3)} className="btn-terracotta">
+                      <button onClick={() => setBookingStep(3)} className="bg-[#c85a32] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl">
                         Review Invoice →
                       </button>
                     </div>
@@ -460,7 +447,7 @@ export default function HomePage() {
 
                     <div className="flex justify-between pt-2">
                       <button onClick={() => setBookingStep(2)} className="text-stone-500 font-bold">← Back</button>
-                      <button onClick={() => setBookingConfirmed(true)} className="btn-forest bg-emerald-800 hover:bg-emerald-900">
+                      <button onClick={() => setBookingConfirmed(true)} className="bg-emerald-800 hover:bg-emerald-900 text-white font-mono text-xs font-bold py-3 px-8 rounded-xl shadow-lg">
                         Confirm & Issue Reservation Slip
                       </button>
                     </div>
@@ -468,63 +455,6 @@ export default function HomePage() {
                 )}
               </div>
             )}
-          </div>
-        </section>
-
-        {/* 5. RESEARCH BLOG HIGHLIGHTS */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-          <div className="flex justify-between items-end mb-6">
-            <div>
-              <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32]">Field Dispatches</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-black text-[#081710]">Research Blog</h2>
-            </div>
-            <Link href="/blog" className="text-xs font-mono font-bold text-[#c85a32] hover:underline">
-              View All Dispatches →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="pro-card overflow-hidden flex flex-col justify-between">
-              <div>
-                <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80" alt="" className="h-44 w-full object-cover" />
-                <div className="p-4 space-y-1.5">
-                  <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">Geology</span>
-                  <h3 className="font-bold text-base font-serif text-[#081710] leading-snug">The 1.4 Billion-Year Mystery of Salkhan Stromatolites</h3>
-                  <p className="text-xs text-stone-600 line-clamp-2">How cyanobacteria colonies created Earth’s earliest oxygen rings in the Vindhyan basin.</p>
-                </div>
-              </div>
-              <div className="p-4 pt-0">
-                <Link href="/blog/salkhan-fossils-stromatolites-geology" className="text-xs font-mono font-bold text-[#c85a32] hover:underline">Read Full Article →</Link>
-              </div>
-            </div>
-
-            <div className="pro-card overflow-hidden flex flex-col justify-between">
-              <div>
-                <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80" alt="" className="h-44 w-full object-cover" />
-                <div className="p-4 space-y-1.5">
-                  <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">History & Forts</span>
-                  <h3 className="font-bold text-base font-serif text-[#081710] leading-snug">Trekking Vijaygarh Fort: The 5th-Century Mountain Citadel</h3>
-                  <p className="text-xs text-stone-600 line-clamp-2">The mountain-top fortress that inspired Devaki Nandan Khatri's epic novel Chandrakanta.</p>
-                </div>
-              </div>
-              <div className="p-4 pt-0">
-                <Link href="/blog/vijaygarh-fort-chandrakanta-history-trek" className="text-xs font-mono font-bold text-[#c85a32] hover:underline">Read Full Article →</Link>
-              </div>
-            </div>
-
-            <div className="pro-card overflow-hidden flex flex-col justify-between">
-              <div>
-                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&q=80" alt="" className="h-44 w-full object-cover" />
-                <div className="p-4 space-y-1.5">
-                  <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">Travel Logistics</span>
-                  <h3 className="font-bold text-base font-serif text-[#081710] leading-snug">Varanasi to Sonbhadra Road Trip & Fares Guide</h3>
-                  <p className="text-xs text-stone-600 line-clamp-2">Complete highway transit details: pre-paid airport cabs, trains, and state bus schedules.</p>
-                </div>
-              </div>
-              <div className="p-4 pt-0">
-                <Link href="/blog/varanasi-to-sonbhadra-road-trip-guide" className="text-xs font-mono font-bold text-[#c85a32] hover:underline">Read Full Article →</Link>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -537,7 +467,7 @@ export default function HomePage() {
         <div className="fixed inset-0 z-50 bg-[#081710]/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={(e) => { if (e.target === e.currentTarget) setCompassOpen(false); }}>
           <div className="bg-white rounded-2xl border border-stone-200 w-full max-w-sm p-5 text-center shadow-2xl relative">
             <button onClick={() => setCompassOpen(false)} className="absolute top-3 right-3 text-stone-400 hover:text-stone-800 text-lg font-bold">✕</button>
-            <span className="text-[10px] font-mono uppercase font-bold text-[#c85a32] block mb-1">Live Satellite Instrument</span>
+            <span className="text-[10px] font-mono uppercase font-bold text-[#c85a32] block mb-1">Live Satellite Telemetry</span>
             <h3 className="text-xl font-serif font-black text-[#081710]">Expedition Compass</h3>
             <p className="text-xs text-stone-500 font-mono mb-3">{gpsStatus}</p>
 
@@ -559,7 +489,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-2 gap-2 my-3 font-mono text-center text-xs">
               <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-200">
-                <span className="text-stone-400 block text-[10px]">Distance to Sonbhadra</span>
+                <span className="text-stone-400 block text-[10px]">Distance</span>
                 <span className="text-base font-bold text-[#081710]">{distanceKm} km</span>
               </div>
               <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-200">
@@ -568,7 +498,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <button onClick={acquireLocation} className="btn-terracotta w-full py-2.5 justify-center">
+            <button onClick={acquireLocation} className="bg-[#c85a32] hover:bg-[#ac4a26] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl w-full shadow-md transition">
               Re-Calibrate Satellites
             </button>
           </div>

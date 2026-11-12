@@ -15,13 +15,13 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
     { href: '/plan-trip', label: 'Plan Trip' },
     { href: '/blog', label: 'Research Blog' },
     { href: '/gallery', label: 'Gallery' },
-    { href: '/about', label: 'About' },
+    { href: '/about', label: 'Founder & Story' },
     { href: '/contact', label: 'Contact' }
   ];
 
   return (
     <>
-      {/* 1. TOP STATUS TICKER */}
+      {/* 1. TOP LIVE TICKER */}
       <div className="bg-[#081710] text-white text-[11px] font-mono py-1.5 px-4 flex flex-wrap justify-between items-center gap-2 border-b border-emerald-900/40">
         <div className="flex items-center space-x-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -48,13 +48,22 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
         </div>
       </div>
 
-      {/* 2. MAIN NAV */}
-      <header className="site-nav">
+      {/* 2. MAIN NAV (With SA Monogram Logo) */}
+      <header className="sticky top-0 z-40 bg-[#fcfaf6]/95 backdrop-blur-md border-b border-stone-200/90 px-4 sm:px-6 py-2.5">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link href="/" className="flex items-center space-x-1.5 group">
-            <span className="font-serif font-black text-2xl tracking-tight text-[#081710]">
-              SON<span className="text-[#c85a32] italic">ADVENTURE</span>
-            </span>
+          <Link href="/" className="flex items-center space-x-2.5 group">
+            {/* Styled SA Logo Monogram */}
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 via-teal-700 to-amber-600 flex items-center justify-center shadow-md p-1 border border-white/40">
+              <span className="font-serif font-black text-xl text-white tracking-tighter">SA</span>
+            </div>
+            <div>
+              <span className="font-serif font-black text-xl tracking-tight text-[#081710]">
+                SON<span className="text-[#c85a32] italic">ADVENTURE</span>
+              </span>
+              <span className="block text-[9px] font-mono uppercase tracking-widest text-emerald-800 font-bold -mt-1">
+                Estd. 2012 · Sonbhadra
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Links with Active State */}

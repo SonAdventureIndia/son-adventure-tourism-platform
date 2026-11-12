@@ -3,8 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Son Adventure · Official Sonbhadra Tourism & Outdoor Exploration Portal',
-  description: 'The global digital gateway to Sonbhadra, Uttar Pradesh: 1.4-billion-year-old Salkhan fossils, Vijaygarh Fort, Rihand inland sea, live satellite compass, and offline jungle survival guides.',
-  keywords: ['Sonbhadra Tourism', 'Salkhan Fossil Park', 'Vijaygarh Fort Trek', 'Rihand Dam', 'Mukha Falls', 'Eco Tourism Uttar Pradesh', 'Varanasi Weekend Trips'],
+  description: 'Founded by Neeraj Dwivedi in 2012. 1.4-billion-year-old Salkhan fossils, Vijaygarh Fort, Veer Lorik Stone, Rihand Dam, Mukha Falls, and offline jungle survival guide for Sonbhadra, UP.',
 };
 
 export default function RootLayout({
@@ -15,8 +14,13 @@ export default function RootLayout({
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'TouristDestination',
-    'name': 'Sonbhadra Tourism Ecosystem',
-    'description': 'Premier geological, eco-tourism, and adventure travel portal for Sonbhadra, UP, India.',
+    'name': 'Son Adventure Tourism Ecosystem',
+    'founder': {
+      '@type': 'Person',
+      'name': 'Neeraj Dwivedi',
+      'jobTitle': 'Founder of Son Adventure',
+      'description': 'Established Son Adventure in 2012 with a vision to build safe, structured, and responsible adventure tourism in Sonbhadra, UP.'
+    },
     'url': 'https://son-adventure.pages.dev',
     'geo': {
       '@type': 'GeoCoordinates',
@@ -33,6 +37,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Manrope:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+        <script src="https://cdn.tailwindcss.com"></script>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       </head>
       <body className="bg-[#fcfaf6] text-[#122118] font-sans antialiased selection:bg-[#c85a32] selection:text-white">
