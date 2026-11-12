@@ -10,24 +10,23 @@ const SONBHADRA_DATUM = { lat: 24.6856, lng: 83.0689 };
 export default function HomePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Sensory Jungle Controls
+  // Atmospheric Sensory Controls
   const [rainActive, setRainActive] = useState(true);
   const [soundPlaying, setSoundPlaying] = useState(false);
   const audioContextRef = useRef<any>(null);
-  const audioGainRef = useRef<any>(null);
 
-  // Modal States
+  // Modals
   const [compassOpen, setCompassOpen] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
 
-  // Real-Time GPS Telemetry
+  // Live Telemetry & GPS Math
   const [distanceKm, setDistanceKm] = useState<number>(71);
   const [bearingDeg, setBearingDeg] = useState<number>(142);
   const [cardinalDir, setCardinalDir] = useState<string>('SE');
   const [gpsStatus, setGpsStatus] = useState<string>('Live Satellite Radar Active');
 
   // Weather & Time
-  const [timeStr, setTimeStr] = useState('09:00 AM');
+  const [timeStr, setTimeStr] = useState('09:15 AM');
   const [dateStr, setDateStr] = useState('Loading...');
   const [temp, setTemp] = useState<number | null>(24);
 
@@ -85,7 +84,7 @@ export default function HomePage() {
     }
   };
 
-  // 1. Procedural Web-Audio Rainforest & Cascade Sound Engine (0 External MP3 Files Needed!)
+  // 1. Procedural Rainforest & Waterfall Audio Engine (Web Audio API)
   const toggleSound = () => {
     try {
       if (!soundPlaying) {
@@ -93,26 +92,23 @@ export default function HomePage() {
         const ctx = new AudioCtx();
         audioContextRef.current = ctx;
 
-        // Generate white/pink noise buffer
         const bufferSize = ctx.sampleRate * 2;
         const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const output = noiseBuffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) {
-          output[i] = (Math.random() * 2 - 1) * 0.4;
+          output[i] = (Math.random() * 2 - 1) * 0.35;
         }
 
         const whiteNoise = ctx.createBufferSource();
         whiteNoise.buffer = noiseBuffer;
         whiteNoise.loop = true;
 
-        // Lowpass filter to mimic rushing water & torrential rainfall
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 650;
+        filter.frequency.value = 600;
 
         const gainNode = ctx.createGain();
-        gainNode.gain.value = 0.18; // gentle natural volume
-        audioGainRef.current = gainNode;
+        gainNode.gain.value = 0.16;
 
         whiteNoise.connect(filter);
         filter.connect(gainNode);
@@ -127,11 +123,11 @@ export default function HomePage() {
         setSoundPlaying(false);
       }
     } catch (e) {
-      console.warn('Audio synthesis restricted by browser');
+      console.warn('Audio synthesis not supported or permitted');
     }
   };
 
-  // 2. Realistic Canvas Rain & Mist Drop Engine
+  // 2. Realistic Canvas Rain Particle Engine
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -149,16 +145,15 @@ export default function HomePage() {
     };
     window.addEventListener('resize', handleResize);
 
-    // Raindrop Particle System
     const drops: Array<{ x: number; y: number; speed: number; length: number; opacity: number; wind: number }> = [];
-    const dropCount = rainActive ? 180 : 35; // torrential rain vs clear mist
+    const count = rainActive ? 180 : 35;
 
-    for (let i = 0; i < dropCount; i++) {
+    for (let i = 0; i < count; i++) {
       drops.push({
         x: Math.random() * width,
         y: Math.random() * height,
         speed: rainActive ? 18 + Math.random() * 12 : 3 + Math.random() * 4,
-        length: rainActive ? 18 + Math.random() * 16 : 2 + Math.random() * 4,
+        length: rainActive ? 16 + Math.random() * 14 : 2 + Math.random() * 3,
         opacity: 0.25 + Math.random() * 0.5,
         wind: rainActive ? -1.8 - Math.random() * 1.5 : 0.2
       });
@@ -166,8 +161,6 @@ export default function HomePage() {
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
-
-      // Draw raindrops with soft trail and splash illusion
       for (let i = 0; i < drops.length; i++) {
         const d = drops[i];
         ctx.beginPath();
@@ -181,13 +174,11 @@ export default function HomePage() {
         d.y += d.speed;
         d.x += d.wind;
 
-        // Reset to top when hitting ground
         if (d.y > height) {
           d.y = -20;
           d.x = Math.random() * (width + 100);
         }
       }
-
       animId = requestAnimationFrame(render);
     };
 
@@ -199,7 +190,7 @@ export default function HomePage() {
     };
   }, [rainActive]);
 
-  // Haversine & GPS calculations
+  // Haversine & Live Bearing Calculation
   const calcMath = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -262,7 +253,7 @@ export default function HomePage() {
   const totalCalculated = Math.round((bookPax * 1800 + (bookGuideTier.includes('1,500') ? 1500 : 0)) * 1.18);
 
   return (
-    <div className="min-h-screen bg-[#fdfbf7] flex flex-col justify-between">
+    <div className="min-h-screen bg-[#fcfaf6] flex flex-col justify-between">
       <div className="noise" />
       <div>
         <Navbar 
@@ -270,35 +261,30 @@ export default function HomePage() {
           onOpenSos={() => setSosModalOpen(true)} 
         />
 
-        {/* 1. CINEMATIC MONSOON JUNGLE HERO (ALIVE CANVASES & SENSORY CONTROLS) */}
+        {/* 1. CINEMATIC MONSOON JUNGLE HERO (CANVAS RAIN & SENSORY CONTROLS) */}
         <header className="hero-jungle relative" id="home">
-          {/* Lush Rainforest & Waterfall Background Image */}
           <div 
             className="hero-jungle-bg" 
             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=2400&q=80')" }} 
           />
-          
-          {/* Real Canvas Rain Falling Over Jungle */}
           <canvas ref={canvasRef} className="rain-canvas" />
-
-          {/* Atmospheric Mist & Vignette */}
-          <div className="mist-overlay" />
+          <div className="mist-vignette" />
 
           <div className="hero-jungle-content">
-            {/* Sensory Controls (Rain & Waterfall Ambience Toggle) */}
+            {/* Sensory Weather & Sound Toggles */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <button 
                 onClick={() => setRainActive(!rainActive)}
                 className={`py-1.5 px-3.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition border flex items-center space-x-1.5 shadow-lg ${rainActive ? 'bg-cyan-950/80 text-cyan-300 border-cyan-500/50' : 'bg-stone-900/80 text-stone-300 border-white/20'}`}
               >
-                <span>{rainActive ? '🌧️ Heavy Monsoon Rain: ON' : '☀️ Sunlit Mist: ON'}</span>
+                <span>{rainActive ? '🌧️ Monsoon Rain: Active' : '☀️ Sunlit Plateau Mode'}</span>
               </button>
 
               <button 
                 onClick={toggleSound}
                 className={`py-1.5 px-3.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition border flex items-center space-x-1.5 shadow-lg ${soundPlaying ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/50' : 'bg-stone-900/80 text-stone-300 border-white/20'}`}
               >
-                <span>{soundPlaying ? '🔊 Jungle & Waterfall Ambience: Playing' : '🔇 Play Rainforest Ambience'}</span>
+                <span>{soundPlaying ? '🔊 Waterfall Ambience: Playing' : '🔇 Play Jungle Waterfall Sound'}</span>
               </button>
             </div>
 
@@ -312,7 +298,7 @@ export default function HomePage() {
               <span className="text-[#e9c974] italic">Torrential Waterfalls. Real Wild.</span>
             </h1>
 
-            <div className="flex items-center space-x-3 bg-black/40 backdrop-blur-md border border-white/15 p-3 rounded-2xl max-w-lg my-4">
+            <div className="flex items-center space-x-3 bg-black/50 backdrop-blur-md border border-white/15 p-3 rounded-2xl max-w-lg my-4">
               <div className="w-9 h-9 rounded-xl bg-[#d4a537] text-forest-950 flex items-center justify-center font-bold text-sm shrink-0">
                 <i className="fas fa-compass" />
               </div>
@@ -344,21 +330,21 @@ export default function HomePage() {
           </div>
 
           {/* HERO LIVE TELEMETRY BAR */}
-          <div className="hero-jungle-telemetry font-mono text-xs">
-            <div className="hero-live-item">
-              <span className="text-stone-400 text-[10px] uppercase font-bold"><i className="fas fa-clock mr-1 text-gold-400" /> Sonbhadra Time</span>
+          <div className="hero-telemetry-strip font-mono text-xs">
+            <div className="text-center">
+              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-clock mr-1 text-gold-400" /> Sonbhadra Time</span>
               <strong className="text-white text-sm font-serif">{timeStr}</strong>
             </div>
-            <div className="hero-live-item">
-              <span className="text-stone-400 text-[10px] uppercase font-bold"><i className="fas fa-temperature-half mr-1 text-gold-400" /> Temperature</span>
+            <div className="text-center">
+              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-temperature-half mr-1 text-gold-400" /> Temperature</span>
               <strong className="text-white text-sm font-serif">{temp ? `${temp}°C` : '24°C'}</strong>
             </div>
-            <div className="hero-live-item">
-              <span className="text-stone-400 text-[10px] uppercase font-bold"><i className="fas fa-droplet mr-1 text-cyan-400" /> River Condition</span>
+            <div className="text-center">
+              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-droplet mr-1 text-cyan-400" /> River Condition</span>
               <strong className="text-cyan-300 text-sm">Full Cascade Flow</strong>
             </div>
-            <div className="hero-live-item">
-              <span className="text-stone-400 text-[10px] uppercase font-bold"><i className="fas fa-satellite mr-1 text-gold-400" /> Satellite Radar</span>
+            <div className="text-center">
+              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-satellite mr-1 text-gold-400" /> Satellite Radar</span>
               <strong className="text-amber-300 text-sm">{distanceKm} km ({cardinalDir})</strong>
             </div>
           </div>
@@ -484,7 +470,7 @@ export default function HomePage() {
                 </button>
               </div>
             ) : (
-              <div className="bg-[#fdfbf7] p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+              <div className="bg-[#fcfaf6] p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
                 <div className="flex justify-between items-center text-xs font-mono border-b border-stone-200 pb-4">
                   <span className={bookingStep === 1 ? 'font-bold text-[#c85a32]' : 'text-stone-400'}>1. Trail & Date</span>
                   <span>→</span>
@@ -617,7 +603,7 @@ export default function HomePage() {
 
             <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
               <div>
-                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80" alt="" className="h-44 w-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&q=80" alt="" className="h-44 w-full object-cover" />
                 <div className="p-4 space-y-1.5">
                   <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">Travel Logistics</span>
                   <h3 className="font-bold text-base font-serif text-[#0a1410] leading-snug">Varanasi to Sonbhadra Road Trip & Fares Guide</h3>
@@ -644,7 +630,7 @@ export default function HomePage() {
             <h3 className="text-xl font-serif font-black text-[#0a1410]">Expedition Compass</h3>
             <p className="text-xs text-stone-500 font-mono mb-3">{gpsStatus}</p>
 
-            <div className="w-48 h-48 mx-auto relative rounded-full border-4 border-[#c85a32] bg-[#fdfbf7] flex items-center justify-center shadow-lg my-3">
+            <div className="w-48 h-48 mx-auto relative rounded-full border-4 border-[#c85a32] bg-[#fcfaf6] flex items-center justify-center shadow-lg my-3">
               <span className="absolute top-2 font-mono font-bold text-xs text-[#c85a32]">N</span>
               <span className="absolute right-3 font-mono font-bold text-xs text-stone-400">E</span>
               <span className="absolute bottom-2 font-mono font-bold text-xs text-stone-400">S</span>
@@ -661,17 +647,17 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-2 gap-2 my-3 font-mono text-center text-xs">
-              <div className="bg-stone-50 p-2.5 rounded-xl border border-stone-200">
+              <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-200">
                 <span className="text-stone-400 block text-[10px]">Distance to Sonbhadra</span>
                 <span className="text-base font-bold text-[#0a1410]">{distanceKm} km</span>
               </div>
-              <div className="bg-stone-50 p-2.5 rounded-xl border border-stone-200">
+              <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-200">
                 <span className="text-stone-400 block text-[10px]">Bearing Angle</span>
                 <span className="text-base font-bold text-[#c85a32]">{bearingDeg}° {cardinalDir}</span>
               </div>
             </div>
 
-            <button onClick={acquireLocation} className="bg-[#c85a32] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl w-full">
+            <button onClick={acquireLocation} className="btn-primary w-full py-2">
               Re-Calibrate Satellites
             </button>
           </div>

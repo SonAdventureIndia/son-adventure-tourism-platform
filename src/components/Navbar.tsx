@@ -8,12 +8,14 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
 
   return (
     <>
-      {/* 1. TOP LIVE TICKER & SOS */}
-      <div className="ticker">
-        <span className="ticker-pulse" />
-        <span className="text-amber-400 font-bold uppercase tracking-wider text-[10px]">SONBHADRA EXPEDITION DESK</span>
-        <div className="hidden sm:inline text-stone-300">· Coordinates: 24.6856° N, 83.0689° E</div>
-        <div className="ml-auto flex items-center space-x-3 text-xs">
+      {/* 1. TOP LIVE TICKER */}
+      <div className="bg-[#0a1410] text-white text-[11px] font-mono py-1.5 px-4 flex flex-wrap justify-between items-center gap-2 border-b border-emerald-900/40">
+        <div className="flex items-center space-x-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-amber-400 font-bold uppercase tracking-wider text-[10px]">SONBHADRA OFFICIAL RADAR</span>
+          <span className="hidden sm:inline text-stone-300">· 24.6856° N, 83.0689° E</span>
+        </div>
+        <div className="flex items-center space-x-4 text-xs">
           <span className="text-stone-300">Helpline: +91 73550 53822</span>
           {onOpenSos ? (
             <button 
@@ -34,7 +36,7 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
       </div>
 
       {/* 2. MAIN NAV */}
-      <nav className="sticky top-[31px] z-40 bg-[#fdfbf7]/95 backdrop-blur-md border-b border-stone-200/90 px-4 sm:px-6 py-3">
+      <nav className="sticky top-0 z-40 bg-[#fcfaf6]/95 backdrop-blur-md border-b border-stone-200/90 px-4 sm:px-6 py-3">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-1.5 group">
             <span className="font-serif font-black text-2xl tracking-tight text-[#0a1410]">
@@ -86,7 +88,7 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
 
       {/* MOBILE DRAWER */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed top-[86px] left-0 right-0 z-50 bg-[#0a1410]/98 border-b border-amber-500/30 p-5 space-y-2.5 shadow-2xl animate-in slide-in-from-top-2">
+        <div className="lg:hidden fixed top-[55px] left-0 right-0 z-50 bg-[#0a1410]/98 border-b border-amber-500/30 p-5 space-y-2.5 shadow-2xl animate-in slide-in-from-top-2">
           <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-xs font-mono font-bold text-white border-b border-stone-800">
             🏠 01. Flagship Home (Live Telemetry & Map)
           </Link>

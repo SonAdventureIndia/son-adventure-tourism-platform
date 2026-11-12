@@ -5,19 +5,21 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --bg-rain:#06130d;
   --bg-sand:#fcfaf6;
-  --accent:#d4a537;
-  --terracotta:#c85a32;
   --forest-dark:#0a1a12;
+  --forest-mid:#143525;
+  --terracotta:#c85a32;
+  --terracotta-hover:#ac4a26;
+  --gold:#d4a537;
+  --gold-light:#e9c974;
   --serif:'Fraunces',serif;
   --sans:'Manrope',sans-serif;
   --mono:'Space Grotesk',monospace;
 }
 
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{font-family:var(--sans);background:var(--bg-sand);color:#122118;line-height:1.6;overflow-x:hidden}
-h1,h2,h3,h4{font-family:var(--serif);font-weight:700;line-height:1.15;letter-spacing:-.025em}
+body{font-family:var(--sans);background:var(--bg-sand);color:#122118;line-height:1.55;overflow-x:hidden}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:800;line-height:1.15;letter-spacing:-.025em;color:var(--forest-dark)}
 a{text-decoration:none;color:inherit}
 button{font-family:inherit;border:none;background:none;cursor:pointer}
 
@@ -31,12 +33,11 @@ button{font-family:inherit;border:none;background:none;cursor:pointer}
   height: 100%;
 }
 
-/* Atmospheric Mist Vignette */
-.mist-overlay {
+.mist-vignette {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: radial-gradient(circle at 50% 30%, rgba(10,26,18,0.2) 0%, rgba(6,19,13,0.88) 85%);
+  background: radial-gradient(circle at 50% 30%, rgba(10,26,18,0.25) 0%, rgba(6,19,13,0.88) 85%);
   pointer-events: none;
 }
 
@@ -47,7 +48,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer}
   display: flex;
   align-items: center;
   padding: 0 5%;
-  background: var(--bg-rain);
+  background: #06130d;
   overflow: hidden;
 }
 
@@ -58,8 +59,6 @@ button{font-family:inherit;border:none;background:none;cursor:pointer}
   background-size: cover;
   background-position: center 35%;
   filter: brightness(0.42) saturate(1.2) contrast(1.15);
-  transform: scale(1.04);
-  transition: transform 12s ease;
 }
 
 .hero-jungle-content {
@@ -72,8 +71,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer}
   padding-bottom: 9rem;
 }
 
-/* Telemetry bar under hero */
-.hero-jungle-telemetry {
+.hero-telemetry-strip {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -88,5 +86,5 @@ button{font-family:inherit;border:none;background:none;cursor:pointer}
 }
 
 @media(max-width:900px){
-  .hero-jungle-telemetry{grid-template-columns:repeat(2,1fr);gap:0.75rem}
+  .hero-telemetry-strip{grid-template-columns:repeat(2,1fr);gap:0.75rem}
 }
