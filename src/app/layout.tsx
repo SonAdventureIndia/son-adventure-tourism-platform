@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Son Adventure · Official Sonbhadra Tourism & Adventure Platform',
-  description: 'Official destination discovery platform for Sonbhadra, Uttar Pradesh. Live GPS telemetry, 1.4B year fossils, fortresses, waterfalls and offline survival.',
+  title: 'Son Adventure · Official Sonbhadra Tourism & Outdoor Platform',
+  description: 'Live GPS navigation, real-time weather radar, 1.4-billion-year fossils, cliffside forts, and offline jungle survival guide for Sonbhadra, Uttar Pradesh.',
 };
 
 export default function RootLayout({
