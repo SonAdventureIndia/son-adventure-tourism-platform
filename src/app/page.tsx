@@ -8,28 +8,23 @@ import Footer from '@/components/Footer';
 const SONBHADRA_DATUM = { lat: 24.6856, lng: 83.0689 };
 
 export default function HomePage() {
-  // Hero Spot Switcher State (Allows switching background & details live!)
   const [heroSpot, setHeroSpot] = useState<'salkhan' | 'vijaygarh' | 'rihand' | 'mukha'>('salkhan');
-
-  // Modals
   const [compassOpen, setCompassOpen] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
 
-  // Live Telemetry & GPS Math
+  // Live Telemetry
   const [distanceKm, setDistanceKm] = useState<number>(71);
   const [bearingDeg, setBearingDeg] = useState<number>(142);
   const [cardinalDir, setCardinalDir] = useState<string>('SE');
   const [gpsStatus, setGpsStatus] = useState<string>('Live Satellite Radar Active');
-
-  // Weather & Time
-  const [timeStr, setTimeStr] = useState('09:30 AM');
+  const [timeStr, setTimeStr] = useState('09:40 AM');
   const [dateStr, setDateStr] = useState('Loading...');
   const [temp, setTemp] = useState<number | null>(24);
 
-  // Map & Elevation Profile State
+  // Active Map Spot
   const [activePlace, setActivePlace] = useState('salkhan');
 
-  // Multi-Step In-Page Booking Engine
+  // In-Page Booking State Machine
   const [bookingStep, setBookingStep] = useState(1);
   const [bookTrail, setBookTrail] = useState('Salkhan Deep-Time Geo-Walk');
   const [bookPax, setBookPax] = useState(2);
@@ -111,7 +106,6 @@ export default function HomePage() {
     }
   };
 
-  // Haversine & Live Bearing Calculation
   const calcMath = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -222,8 +216,8 @@ export default function HomePage() {
               <span className="text-[#e9c974] italic">{heroSpots[heroSpot].tagline}</span>
             </h1>
 
-            <div className="flex items-center space-x-3 bg-black/50 backdrop-blur-md border border-white/15 p-3 rounded-2xl max-w-lg my-4">
-              <div className="w-9 h-9 rounded-xl bg-[#d4a537] text-pine-950 flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="flex items-center space-x-3 bg-black/60 backdrop-blur-md border border-white/15 p-3 rounded-2xl max-w-lg my-4">
+              <div className="w-9 h-9 rounded-xl bg-[#d4a537] text-forest-950 flex items-center justify-center font-bold text-sm shrink-0">
                 <i className="fas fa-location-dot" />
               </div>
               <div className="text-xs">
@@ -238,15 +232,15 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-wrap gap-3 pt-4">
-              <Link href="/destinations" className="bg-[#c85a32] hover:bg-[#ac4a26] text-white text-xs font-mono font-bold uppercase tracking-wider py-3 px-6 rounded-xl shadow-lg transition">
+              <Link href="/destinations" className="btn-terracotta">
                 <span>Explore Destinations</span>
-                <i className="fas fa-arrow-right ml-1.5 text-[10px]" />
+                <i className="fas fa-arrow-right ml-1 text-[10px]" />
               </Link>
-              <a href="#booking-engine" className="bg-pine-950/90 hover:bg-pine-900 text-white border border-white/20 text-xs font-mono font-bold uppercase tracking-wider py-3 px-6 rounded-xl transition backdrop-blur-md">
+              <a href="#booking-engine" className="btn-forest bg-forest-950/90 border border-white/20">
                 <i className="fas fa-calendar-check mr-1 text-gold-400" />
                 <span>Permit & Booking Engine</span>
               </a>
-              <button onClick={() => { setCompassOpen(true); acquireLocation(); }} className="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-mono font-bold uppercase tracking-wider py-3 px-5 rounded-xl transition backdrop-blur-md">
+              <button onClick={() => { setCompassOpen(true); acquireLocation(); }} className="btn-forest bg-white/10 border border-white/20">
                 <i className="fas fa-location-crosshairs mr-1 text-amber-300" />
                 <span>Open Compass</span>
               </button>
@@ -323,7 +317,7 @@ export default function HomePage() {
             </div>
 
             {/* LIVE ELEVATION & TERRAIN HUD CARD */}
-            <div className="lg:col-span-7 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-4">
+            <div className="lg:col-span-7 pro-card p-6 sm:p-8 space-y-4">
               <div className="h-48 rounded-2xl overflow-hidden relative">
                 <img src={places[activePlace].img} alt={places[activePlace].title} className="w-full h-full object-cover" />
                 <span className="absolute bottom-3 left-3 bg-[#081710]/90 text-white font-mono text-[10px] font-bold px-2.5 py-1 rounded-md">
@@ -419,7 +413,7 @@ export default function HomePage() {
                     </div>
 
                     <div className="sm:col-span-3 pt-3 flex justify-end">
-                      <button onClick={() => setBookingStep(2)} className="bg-[#c85a32] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl">
+                      <button onClick={() => setBookingStep(2)} className="btn-terracotta">
                         Next: Guide & Forest Permit →
                       </button>
                     </div>
@@ -444,7 +438,7 @@ export default function HomePage() {
 
                     <div className="flex justify-between pt-2">
                       <button onClick={() => setBookingStep(1)} className="text-stone-500 font-bold">← Back</button>
-                      <button onClick={() => setBookingStep(3)} className="bg-[#c85a32] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl">
+                      <button onClick={() => setBookingStep(3)} className="btn-terracotta">
                         Review Invoice →
                       </button>
                     </div>
@@ -466,7 +460,7 @@ export default function HomePage() {
 
                     <div className="flex justify-between pt-2">
                       <button onClick={() => setBookingStep(2)} className="text-stone-500 font-bold">← Back</button>
-                      <button onClick={() => setBookingConfirmed(true)} className="bg-emerald-800 hover:bg-emerald-900 text-white font-mono text-xs font-bold py-3 px-8 rounded-xl shadow-lg">
+                      <button onClick={() => setBookingConfirmed(true)} className="btn-forest bg-emerald-800 hover:bg-emerald-900">
                         Confirm & Issue Reservation Slip
                       </button>
                     </div>
@@ -477,7 +471,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 5. RESEARCH BLOG & ADSENSE HUB */}
+        {/* 5. RESEARCH BLOG HIGHLIGHTS */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
           <div className="flex justify-between items-end mb-6">
             <div>
@@ -490,7 +484,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
+            <div className="pro-card overflow-hidden flex flex-col justify-between">
               <div>
                 <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80" alt="" className="h-44 w-full object-cover" />
                 <div className="p-4 space-y-1.5">
@@ -504,7 +498,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
+            <div className="pro-card overflow-hidden flex flex-col justify-between">
               <div>
                 <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80" alt="" className="h-44 w-full object-cover" />
                 <div className="p-4 space-y-1.5">
@@ -518,7 +512,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
+            <div className="pro-card overflow-hidden flex flex-col justify-between">
               <div>
                 <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&q=80" alt="" className="h-44 w-full object-cover" />
                 <div className="p-4 space-y-1.5">
@@ -574,7 +568,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <button onClick={acquireLocation} className="bg-[#c85a32] hover:bg-[#ac4a26] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl w-full shadow-md transition">
+            <button onClick={acquireLocation} className="btn-terracotta w-full py-2.5 justify-center">
               Re-Calibrate Satellites
             </button>
           </div>
