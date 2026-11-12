@@ -2,87 +2,91 @@
 
 import React, { useState, useEffect } from 'react';
 
-const SONBHADRA = { lat: 24.6856, lng: 83.0689 };
+const SONBHADRA_HQ = { lat: 24.6856, lng: 83.0689, name: 'Robertsganj (HQ)' };
 
 export default function HomePage() {
+  const [isOnline, setIsOnline] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [compassOpen, setCompassOpen] = useState(false);
+  const [sosModalOpen, setSosModalOpen] = useState(false);
+  const [survivalModalOpen, setSurvivalModalOpen] = useState(false);
+
+  // Live Location & Math
   const [distanceKm, setDistanceKm] = useState<number>(0);
   const [bearingDeg, setBearingDeg] = useState<number>(0);
   const [cardinalDir, setCardinalDir] = useState<string>('N');
-  const [compassStatus, setCompassStatus] = useState<string>('Calibrated with GPS Satellites');
-  const [activePlace, setActivePlace] = useState('salkhan');
-  const [gearCategory, setGearCategory] = useState<'trekker' | 'water' | 'camp'>('trekker');
+  const [gpsStatus, setGpsStatus] = useState<string>('GPS Satellite System Ready');
+  const [userLocationName, setUserLocationName] = useState<string>('Calibrating position...');
 
+  // Live Time & Weather
   const [timeStr, setTimeStr] = useState('--:--');
+  const [dateStr, setDateStr] = useState('Loading...');
   const [temp, setTemp] = useState<number | null>(null);
+  const [weatherDesc, setWeatherDesc] = useState('Sunny & Clear');
+
+  // Interactive Map State
+  const [activePlace, setActivePlace] = useState('salkhan');
 
   // Calculator State
   const [calcDays, setCalcDays] = useState(2);
   const [calcGuests, setCalcGuests] = useState(2);
   const [calcAddon, setCalcAddon] = useState(1500);
 
+  const emergencyContacts = [
+    { title: 'Sonbhadra Police Emergency', number: '112', desc: 'Direct 24/7 District Police Dispatch' },
+    { title: 'District Hospital (Robertsganj)', number: '108', desc: 'Medical Emergency & Ambulance Service' },
+    { title: 'Kaimur Forest Wildlife Control', number: '+915444222268', desc: 'Forest checkposts & wildlife assistance' },
+    { title: 'Son Adventure Emergency Desk', number: '+917355053822', desc: 'On-ground verified rescue & guide help' }
+  ];
+
   const places: Record<string, any> = {
     salkhan: {
-      name: 'Salkhan Fossils Geo-Park',
-      elevation: '315 Meters',
-      trailDifficulty: 'Easy Walking Trail',
-      sunlight: 'Best: 07:00 AM – 11:30 AM',
-      highlight: '1.4 Billion-Year-Old Stromatolite Strata (Pre-Cambrian)',
+      name: 'Salkhan Fossils Park',
+      coords: '24.5833° N, 83.0833° E',
+      elevation: '315 m',
+      distanceFromHQ: '12 km South',
+      terrain: 'Sandstone Geological Beds',
+      bestHour: '07:30 AM – 11:30 AM',
+      highlight: '1.4-billion-year-old stromatolite rings from early Earth history.',
       image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80',
-      description: 'Step directly on the ancient seafloor where life first began forming photosynthetic rings before complex multicellular animals ever existed.'
+      tips: 'Zero concession stands on-site; carry 2L water. Chipping fossil stone is strictly illegal.'
     },
     vijaygarh: {
-      name: 'Vijaygarh Cliff Citadel',
-      elevation: '430 Meters',
-      trailDifficulty: 'Stair Trek (500+ Steps)',
-      sunlight: 'Golden Hour: 05:45 AM (Sunrise)',
-      highlight: 'Perennial Mountain Lakes & 5th-Century Inscriptions',
-      image: 'https://images.unsplash.com/photo-1599561046251-bfb9465b4c44?auto=format&fit=crop&w=1200&q=80',
-      description: 'Towering stone ramparts above the Son River Valley offering 360-degree panoramic views of eastern Kaimur ridges.'
+      name: 'Vijaygarh Fort',
+      coords: '24.5772° N, 83.2104° E',
+      elevation: '430 m',
+      distanceFromHQ: '30 km South-East',
+      terrain: 'Cliff Plateau Trek (500+ Steps)',
+      bestHour: '05:30 AM (Sunrise view)',
+      highlight: 'Ancient perennial lakes (Mira Sagar) & 5th-century rock inscriptions.',
+      image: 'https://images.unsplash.com/photo-1599561046289-e31897846e41?auto=format&fit=crop&w=1200&q=80',
+      tips: 'Descend before sunset. Forest area borders wildlife corridors.'
     },
     rihand: {
-      name: 'Rihand Inland Sea (GBP Sagar)',
-      elevation: '275 Meters',
-      trailDifficulty: 'Water Expeditions & Trails',
-      sunlight: 'Sunset: 05:15 PM',
-      highlight: 'Miles of tranquil blue waters & shoreline camps',
+      name: 'Rihand Dam & Inland Sea',
+      coords: '24.2044° N, 83.0336° E',
+      elevation: '275 m',
+      distanceFromHQ: '70 km South (Pipri)',
+      terrain: 'Freshwater Reservoir Coast',
+      bestHour: '04:30 PM (Sunset)',
+      highlight: 'Vast reservoir vistas, shoreline breezes & calm waters.',
       image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-      description: 'One of Asia’s largest inland freshwater bodies nestled in forested hills, ideal for peaceful kayaking and campfire retreats.'
+      tips: 'Swimming strictly forbidden due to deep undertows. Drone flying requires police permit.'
     },
     mukha: {
-      name: 'Mukha Falls & Belan Gorge',
-      elevation: '210 Meters',
-      trailDifficulty: 'Canyon Descent (Moderate)',
-      sunlight: 'Mid-Morning Light',
-      highlight: 'Natural tiered amphitheater cascades & rock shelters',
+      name: 'Mukha Falls (Belan Gorge)',
+      coords: '24.7142° N, 82.7811° E',
+      elevation: '210 m',
+      distanceFromHQ: '45 km West (Ghorawal)',
+      terrain: 'Sandstone River Canyon',
+      bestHour: '10:00 AM – 03:00 PM',
+      highlight: 'Tiered cascades dropping into natural amphitheater gorge.',
       image: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
-      description: 'Cascading natural waterfalls carving dramatic shelves into the sandstone canyon basin of central Sonbhadra.'
+      tips: 'Beware of flash currents during monsoon. Wet boulders are very slippery.'
     }
   };
 
-  const gearItems = {
-    trekker: [
-      { name: 'Sturdy Trail Footwear', tip: 'Essential for Vindhyan stone trails & Vijaygarh stairs' },
-      { name: 'Refillable 2L Canteen', tip: 'Zero-plastic zone: clean drinking water is vital' },
-      { name: 'UV Trail Hat & Polarized Lenses', tip: 'Bright daylight reflection on sandstone beds' },
-      { name: 'Field Compass & GPS Device', tip: 'For off-grid ridge navigation' }
-    ],
-    water: [
-      { name: 'Quick-Dry Ripstop Apparel', tip: 'Lightweight for Belan river spray & humidity' },
-      { name: 'Dry Bag (20L Waterproof)', tip: 'Protects cameras & phones during boat crossings' },
-      { name: 'High-Grip River Sandals', tip: 'Prevents slipping on wet Mukha river stones' },
-      { name: 'Biodegradable Sunscreen', tip: 'Eco-safe for freshwater river ecosystems' }
-    ],
-    camp: [
-      { name: 'Headlamp with Red Beam', tip: 'Preserves night-vision during star-gazing' },
-      { name: 'Cotton Trail Blanket / Fleece', tip: 'Vindhyan plateau nights get crisp and cool' },
-      { name: 'Field Notebook & Pencil', tip: 'Document fossil sketches & bird observations' },
-      { name: 'Pocket First-Aid Kit', tip: 'Antiseptic, blister tape, and rehydration salts' }
-    ]
-  };
-
-  // Math: Haversine Distance & Bearing
+  // Haversine & Great-Circle Bearing
   const calcMath = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -101,61 +105,92 @@ export default function HomePage() {
   };
 
   const acquireLocation = () => {
-    setCompassStatus('Acquiring satellite lock...');
+    setGpsStatus('Locking onto GPS Satellites...');
     if (!navigator.geolocation) {
-      setCompassStatus('GPS not supported by browser');
+      setGpsStatus('GPS chip unsupported by browser');
       return;
     }
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const { dist, brng, cardinal } = calcMath(pos.coords.latitude, pos.coords.longitude, SONBHADRA.lat, SONBHADRA.lng);
+        const { dist, brng, cardinal } = calcMath(pos.coords.latitude, pos.coords.longitude, SONBHADRA_HQ.lat, SONBHADRA_HQ.lng);
         setDistanceKm(dist);
         setBearingDeg(brng);
         setCardinalDir(cardinal);
-        setCompassStatus('🟢 Live Satellites Connected');
+        setGpsStatus(`🟢 Live Satellites Connected (±${Math.round(pos.coords.accuracy)}m)`);
+        setUserLocationName(`${pos.coords.latitude.toFixed(4)}° N, ${pos.coords.longitude.toFixed(4)}° E`);
       },
       () => {
-        // Varanasi Datum
-        const { dist, brng, cardinal } = calcMath(25.3176, 82.9739, SONBHADRA.lat, SONBHADRA.lng);
+        // Fallback: Varanasi Transit Datum
+        const { dist, brng, cardinal } = calcMath(25.3176, 82.9739, SONBHADRA_HQ.lat, SONBHADRA_HQ.lng);
         setDistanceKm(dist);
         setBearingDeg(brng);
         setCardinalDir(cardinal);
-        setCompassStatus('🟡 Reference: Varanasi Gateway (105 km)');
+        setGpsStatus('🟡 Datum Reference: Varanasi Junction (105 km)');
+        setUserLocationName('Varanasi, UP (Nearest Air/Rail Hub)');
       },
-      { timeout: 7000 }
+      { enableHighAccuracy: true, timeout: 8000 }
     );
   };
 
   useEffect(() => {
+    // Network status listener
+    setIsOnline(navigator.onLine);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Live clock
     const timer = setInterval(() => {
       const now = new Date();
       setTimeStr(now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }));
+      setDateStr(now.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata', weekday: 'short', month: 'short', day: 'numeric' }));
     }, 1000);
 
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${SONBHADRA.lat}&longitude=${SONBHADRA.lng}&current=temperature_2m&timezone=Asia%2FKolkata`)
+    // Live weather
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${SONBHADRA_HQ.lat}&longitude=${SONBHADRA_HQ.lng}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&timezone=Asia%2FKolkata`)
       .then(r => r.json())
-      .then(data => {
-        if (data.current) setTemp(Math.round(data.current.temperature_2m));
+      .then(d => {
+        if (d.current) {
+          setTemp(Math.round(d.current.temperature_2m));
+          setWeatherDesc(`${Math.round(d.current.temperature_2m)}°C · Humidity ${d.current.relative_humidity_2m}%`);
+        }
       })
       .catch(() => setTemp(26));
 
-    return () => clearInterval(timer);
+    acquireLocation();
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
-  const totalEstimate = Math.round((calcGuests * 2200 * calcDays + calcAddon * calcGuests) * 1.18);
+  const totalEstimate = Math.round((calcGuests * 2000 * calcDays + calcAddon * calcGuests) * 1.18);
 
   return (
     <div className="topo-pattern min-h-screen">
-      {/* EXPEDITION TICKER */}
-      <div className="bg-[#143525] text-[#fbf8f2] text-xs py-2 px-4 flex justify-between items-center font-mono">
-        <div className="flex items-center space-x-3">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span className="font-bold tracking-wider uppercase text-amber-300">FIELD EXPEDITION REGISTER</span>
-          <span className="hidden md:inline text-stone-300">· Coordinates: 24.6856° N, 83.0689° E</span>
+      
+      {/* NETWORK STATUS BAR (ONLINE / OFFLINE JUNGLE RADAR) */}
+      <div className={`text-xs py-2 px-4 flex justify-between items-center font-mono ${isOnline ? 'bg-[#0e271a] text-white' : 'bg-red-800 text-white font-bold'}`}>
+        <div className="flex items-center space-x-2">
+          <span className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-400 animate-ping' : 'bg-yellow-300'}`} />
+          <span>
+            {isOnline 
+              ? '🟢 ONLINE RADAR ACTIVE · Sonbhadra Telemetry Connected' 
+              : '⚠️ OFFLINE JUNGLE MODE · Operating from Phone Cache & Local Satellite GPS'}
+          </span>
         </div>
         <div className="flex items-center space-x-4">
           <span>{timeStr} IST</span>
-          <span className="text-amber-300 font-bold">{temp ? `${temp}°C` : '26°C'} Sunlit</span>
+          <button 
+            onClick={() => setSosModalOpen(true)}
+            className="bg-[#c25e36] text-white px-2 py-0.5 rounded text-[11px] font-bold"
+          >
+            SOS EMERGENCY
+          </button>
         </div>
       </div>
 
@@ -166,35 +201,33 @@ export default function HomePage() {
         </a>
 
         <ul className="nav-links">
-          <li><a href="#places">Expedition Sites</a></li>
-          <li><a href="#map">Trail Map</a></li>
-          <li><a href="#gear">Gear Checklist</a></li>
-          <li><a href="#planner">Trip Cost</a></li>
+          <li><a href="#destinations">Destinations</a></li>
+          <li><a href="#map">Terrain Map</a></li>
+          <li><a href="#guide">How to Reach</a></li>
+          <li><a href="#survival">Offline Survival</a></li>
+          <li><a href="#planner">Cost Planner</a></li>
         </ul>
 
         <div className="flex items-center space-x-3">
           <button 
             onClick={() => { setCompassOpen(true); acquireLocation(); }} 
-            className="hidden sm:inline-flex items-center space-x-2 text-xs font-mono font-bold text-[#143525] bg-[#143525]/5 border border-[#143525]/20 py-2 px-3.5 rounded-xl hover:bg-[#143525]/10 transition"
+            className="hidden sm:inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-[#0e271a] bg-white border border-stone-300 py-2 px-3 rounded-xl shadow-sm"
           >
             <i className="fas fa-compass text-[#c25e36]" />
-            <span>Field Compass</span>
+            <span>Live Compass</span>
           </button>
 
-          <a 
-            href="https://wa.me/917355053822?text=Hello%20Son%20Adventure,%20I%20am%20ready%20to%20plan%20an%20outdoor%20expedition." 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="btn-adventure py-2.5 px-4 text-xs"
+          <button 
+            onClick={() => setSosModalOpen(true)} 
+            className="btn-terracotta py-2 px-3 text-xs"
           >
-            <i className="fab fa-whatsapp text-sm" />
-            <span>WhatsApp Desk</span>
-          </a>
+            <i className="fas fa-phone-volume" />
+            <span>SOS Helpline</span>
+          </button>
 
-          {/* HAMBURGER BUTTON */}
           <button 
             onClick={() => setMobileMenuOpen(prev => !prev)} 
-            className="hamburger text-stone-800 p-2 border border-stone-300 rounded-lg text-lg"
+            className="md:hidden text-stone-800 p-2 border border-stone-300 rounded-lg text-lg"
             aria-label="Toggle Navigation Menu"
           >
             <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`} />
@@ -202,54 +235,53 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* MOBILE DRAWER */}
+      {/* MOBILE MENU */}
       {mobileMenuOpen && (
-        <div className="fixed top-16 left-0 right-0 z-50 bg-[#fbf8f2]/98 border-b border-stone-300 p-6 flex flex-col space-y-4 shadow-xl">
-          <a href="#places" onClick={() => setMobileMenuOpen(false)} className="font-mono text-sm uppercase font-bold text-[#143525] py-2 border-b border-stone-200">
-            🏔️ 01. Verified Expedition Sites
+        <div className="fixed top-16 left-0 right-0 z-50 bg-[#f8f5ee]/98 border-b border-stone-300 p-6 flex flex-col space-y-4 shadow-2xl">
+          <a href="#destinations" onClick={() => setMobileMenuOpen(false)} className="font-mono text-sm uppercase font-bold text-[#0e271a] py-2 border-b border-stone-200">
+            🏔️ 01. Verified Destinations
           </a>
-          <a href="#map" onClick={() => setMobileMenuOpen(false)} className="font-mono text-sm uppercase font-bold text-[#143525] py-2 border-b border-stone-200">
-            🗺️ 02. Interactive Trail Map
+          <a href="#map" onClick={() => setMobileMenuOpen(false)} className="font-mono text-sm uppercase font-bold text-[#0e271a] py-2 border-b border-stone-200">
+            🗺️ 02. Interactive Topo Map
           </a>
-          <a href="#gear" onClick={() => setMobileMenuOpen(false)} className="font-mono text-sm uppercase font-bold text-[#143525] py-2 border-b border-stone-200">
-            🎒 03. Backpack Gear Checklist
+          <a href="#guide" onClick={() => setMobileMenuOpen(false)} className="font-mono text-sm uppercase font-bold text-[#0e271a] py-2 border-b border-stone-200">
+            🚆 03. How to Reach (Varanasi/Trains/Road)
           </a>
-          <a href="#planner" onClick={() => setMobileMenuOpen(false)} className="font-mono text-sm uppercase font-bold text-[#143525] py-2 border-b border-stone-200">
-            💰 04. Expedition Cost Planner
+          <a href="#survival" onClick={() => setMobileMenuOpen(false)} className="font-mono text-sm uppercase font-bold text-[#0e271a] py-2 border-b border-stone-200">
+            🧭 04. Offline Jungle Survival Guide
           </a>
           <button 
             onClick={() => { setMobileMenuOpen(false); setCompassOpen(true); acquireLocation(); }} 
-            className="btn-adventure w-full justify-center mt-2"
+            className="btn-forest w-full justify-center mt-2"
           >
-            <i className="fas fa-location-crosshairs" />
-            <span>Launch Live Field Compass</span>
+            <i className="fas fa-compass" />
+            <span>Open Satellite Compass Dial</span>
           </button>
         </div>
       )}
 
-      {/* HERO SECTION: SUNLIT EXPLORATION */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="home">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      {/* HERO SECTION: DEEP ADVENTURE DISPATCH */}
+      <section className="pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="home">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           
-          {/* LEFT EDITORIAL HERO */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="expedition-stamp">
-              <i className="fas fa-map-location-dot text-[#c25e36]" />
-              <span>Official Expedition Gateway · Sonbhadra, UP</span>
+            <div className="badge-field">
+              <i className="fas fa-mountain-sun text-[#c25e36]" />
+              <span>Official Tourism Discovery · Sonbhadra, UP</span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#143525] leading-[1.05]">
-              Step Out of the Routine. <br />
-              <span className="text-[#c25e36] italic font-serif">Enter Wild Sonbhadra.</span>
+            <h1 className="text-4xl sm:text-6xl font-extrabold text-[#0e271a] leading-[1.08]">
+              Where 1.4 Billion Years of Earth <br />
+              <span className="text-[#c25e36] italic font-serif">Meet Untamed Wilderness.</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-[#576b60] max-w-xl leading-relaxed">
-              Touch 1.4-billion-year-old prebiotic fossil beds. Trek the misty ramparts of 5th-century cliffside fortresses. Kayak across endless inland waters. An authentic outdoor adventure into Uttar Pradesh’s ancient plateau.
+            <p className="text-base sm:text-lg text-[#4e6155] leading-relaxed max-w-xl">
+              Walk on ancient prebiotic seafloors at Salkhan. Ascend Vijaygarh’s 5th-century cliff fortress. Witness Mukha Falls cascading into sandstone gorges. Built for travelers who seek authentic discovery.
             </p>
 
-            <div className="flex flex-wrap gap-4 pt-2">
-              <a href="#places" className="btn-adventure">
-                <span>Start Your Expedition</span>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <a href="#destinations" className="btn-terracotta">
+                <span>Explore Destinations</span>
                 <i className="fas fa-arrow-right" />
               </a>
 
@@ -257,63 +289,51 @@ export default function HomePage() {
                 onClick={() => { setCompassOpen(true); acquireLocation(); }} 
                 className="btn-forest"
               >
-                <i className="fas fa-compass text-amber-300" />
-                <span>Live Trail Compass</span>
+                <i className="fas fa-location-crosshairs text-amber-300" />
+                <span>Live GPS Compass</span>
+              </button>
+
+              <button 
+                onClick={() => setSurvivalModalOpen(true)} 
+                className="btn-forest bg-stone-700 hover:bg-stone-800"
+              >
+                <i className="fas fa-shield-heart text-emerald-400" />
+                <span>Jungle Survival Kit</span>
               </button>
             </div>
 
-            {/* LIVE SATELLITE READOUT PILL */}
-            <div className="p-4 rounded-2xl bg-white border border-[#143525]/10 shadow-sm flex items-center justify-between max-w-lg mt-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-[#143525]/5 flex items-center justify-center text-[#c25e36]">
-                  <i className="fas fa-satellite-dish" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono uppercase font-bold text-stone-400 block">Satellite Distance</span>
-                  <strong className="text-sm text-[#143525]">
-                    {distanceKm > 0 ? `You are ${distanceKm.toLocaleString()} km from Sonbhadra` : 'Calibrating from Varanasi Datum...'}
-                  </strong>
-                </div>
+            {/* LIVE SATELLITE TELEMETRY CARD */}
+            <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div>
+                <span className="text-[10px] font-mono uppercase text-stone-400 font-bold block">Live Distance Vector</span>
+                <strong className="text-sm text-[#0e271a]">
+                  {distanceKm > 0 ? `You are ${distanceKm.toLocaleString()} km from Sonbhadra (${cardinalDir})` : 'Calibrating from GPS...'}
+                </strong>
+                <p className="text-xs text-stone-500 font-mono mt-0.5">{gpsStatus}</p>
               </div>
-              <span className="text-xs font-mono font-bold text-[#c25e36] bg-[#c25e36]/10 px-2.5 py-1 rounded-md">
-                100% Real Time
+
+              <span className="text-xs font-mono font-bold bg-[#c25e36]/10 text-[#c25e36] px-3 py-1.5 rounded-lg whitespace-nowrap">
+                {temp ? `${temp}°C Sonbhadra` : '26°C Sunny'}
               </span>
             </div>
           </div>
 
-          {/* RIGHT VISUAL HERO CARDS */}
+          {/* RIGHT VISUAL */}
           <div className="lg:col-span-5 relative">
             <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white">
               <div className="relative h-80 sm:h-96 w-full">
                 <img 
                   src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop" 
-                  alt="Sonbhadra Adventure" 
-                  className="w-full h-full object-cover"
+                  alt="Sonbhadra Kaimur Hills" 
+                  className="w-full h-full object-cover" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#143525]/80 via-transparent to-transparent" />
-                
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0e271a]/85 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6 text-white">
-                  <span className="text-[10px] uppercase font-mono font-bold bg-[#c25e36] px-2.5 py-1 rounded-full inline-block mb-2">
-                    Vindhyan Escarpment
+                  <span className="text-[10px] font-mono font-bold uppercase bg-[#c25e36] px-2.5 py-1 rounded inline-block mb-2">
+                    Kaimur Plateau
                   </span>
-                  <h3 className="text-2xl font-bold text-white">The High Ridges of Kaimur</h3>
-                  <p className="text-xs text-stone-200 mt-1">Ancient pre-Cambrian sandstone corridors & wildlife belts.</p>
-                </div>
-              </div>
-
-              {/* THREE OUTDOOR PILLARS */}
-              <div className="grid grid-cols-3 divide-x divide-stone-100 p-4 bg-white text-center font-mono">
-                <div>
-                  <span className="text-lg font-bold text-[#143525] block">1.4B+</span>
-                  <span className="text-[10px] text-stone-400 uppercase">Years Age</span>
-                </div>
-                <div>
-                  <span className="text-lg font-bold text-[#c25e36] block">430m</span>
-                  <span className="text-[10px] text-stone-400 uppercase">Fort Peak</span>
-                </div>
-                <div>
-                  <span className="text-lg font-bold text-[#143525] block">105 km</span>
-                  <span className="text-[10px] text-stone-400 uppercase">From VNS</span>
+                  <h3 className="text-2xl font-bold">The Great Vindhyan Basin</h3>
+                  <p className="text-xs text-stone-200 mt-1">Confluence of 4 States: UP, MP, Chhattisgarh, Jharkhand.</p>
                 </div>
               </div>
             </div>
@@ -322,117 +342,109 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 2: VERIFIED EXPEDITION SITES (LIGHT CARDS) */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="places">
-        <div className="text-center max-w-2xl mx-auto mb-14 space-y-2">
-          <span className="expedition-stamp">Verified Expedition Grounds</span>
-          <h2 className="text-3xl sm:text-5xl font-black text-[#143525]">Four Pillars of Discovery</h2>
-          <p className="text-[#576b60] text-sm">
-            Fact-checked geographical marvels. Every site is mapped with verified elevations and daylight windows.
+      {/* SECTION 1: VERIFIED DESTINATIONS WITH PRECISE DATA */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="destinations">
+        <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+          <span className="badge-field">Verified Field Database</span>
+          <h2 className="text-3xl sm:text-4xl font-black text-[#0e271a]">Destinations of Sonbhadra</h2>
+          <p className="text-[#4e6155] text-sm">
+            Detailed access information, coordinates, best sunlight hours, and conservation tips for first-time visitors.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Object.entries(places).map(([key, p]: any) => (
-            <div 
-              key={key} 
-              className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-            >
+            <div key={key} className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
               <div>
                 <div className="h-48 relative overflow-hidden">
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover hover:scale-105 transition duration-500" />
-                  <span className="absolute top-3 left-3 bg-[#143525]/90 text-white text-[10px] font-mono font-bold px-2.5 py-1 rounded-md">
+                  <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                  <span className="absolute top-3 left-3 bg-[#0e271a]/90 text-white font-mono text-[10px] font-bold px-2 py-0.5 rounded">
                     {p.elevation}
                   </span>
                 </div>
                 <div className="p-5 space-y-2">
-                  <span className="text-[11px] font-mono font-bold text-[#c25e36] uppercase">{p.trailDifficulty}</span>
-                  <h3 className="text-xl font-bold text-[#143525]">{p.name}</h3>
-                  <p className="text-xs text-[#576b60] leading-relaxed line-clamp-3">{p.description}</p>
+                  <span className="text-[10px] font-mono font-bold text-[#c25e36] uppercase">{p.terrain}</span>
+                  <h3 className="text-lg font-bold text-[#0e271a]">{p.name}</h3>
+                  <p className="text-xs text-stone-600 leading-relaxed">{p.highlight}</p>
                 </div>
               </div>
 
-              <div className="p-5 pt-3 border-t border-stone-100 flex justify-between items-center text-xs font-mono">
-                <span className="text-stone-400">{p.sunlight}</span>
-                <a 
-                  href={`https://wa.me/917355053822?text=Hello%20Son%20Adventure,%20I%20want%20to%20visit%20${encodeURIComponent(p.name)}`}
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="font-bold text-[#c25e36] hover:underline"
-                >
-                  Plan Visit →
-                </a>
+              <div className="p-5 pt-3 border-t border-stone-100 text-xs font-mono space-y-2">
+                <div className="text-stone-500">📍 {p.coords}</div>
+                <div className="text-amber-800 font-semibold">🕒 {p.bestHour}</div>
+                <div className="p-2 bg-stone-50 rounded text-[11px] text-stone-600 border border-stone-200/60">
+                  <strong>Advice:</strong> {p.tips}
+                </div>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* SECTION 3: INTERACTIVE TRAIL MAP */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="map">
-        <div className="bg-white rounded-3xl border border-stone-200/80 p-8 sm:p-12 shadow-sm">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-6 border-b border-stone-100 gap-4">
+      {/* SECTION 2: INTERACTIVE TOPOGRAPHIC MAP & TELEMETRY */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="map">
+        <div className="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 shadow-sm space-y-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end pb-6 border-b border-stone-100 gap-4">
             <div>
-              <span className="expedition-stamp">Terrain & Route Navigation</span>
-              <h2 className="text-3xl font-black text-[#143525] mt-1">Interactive Sonbhadra Map</h2>
-              <p className="text-[#576b60] text-sm mt-1">Click any marker pin on the map to open the live terrain dispatch sheet.</p>
+              <span className="badge-field">Terrain Exploration</span>
+              <h2 className="text-3xl font-black text-[#0e271a] mt-1">Interactive Trail Map</h2>
+              <p className="text-stone-600 text-sm mt-1">Click on any marker pin to inspect terrain, elevation, and distance from Robertsganj.</p>
             </div>
-            <div className="flex items-center space-x-2 text-xs font-mono text-stone-500">
-              <span className="w-3 h-3 rounded-full bg-[#c25e36]" /> Click Pin to Inspect
-            </div>
+            <span className="text-xs font-mono text-[#c25e36] font-bold">
+              ● Tap marker on map to switch location
+            </span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* SVG MAP */}
-            <div className="lg:col-span-7 bg-[#fbf8f2] rounded-2xl p-6 border border-stone-200">
+            <div className="lg:col-span-7 bg-[#f8f5ee] rounded-2xl p-6 border border-stone-200">
               <svg className="w-full h-auto" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
                 <path className="map-district" d="M 150 100 Q 350 60 550 90 Q 700 120 720 280 Q 740 450 620 530 Q 480 590 320 550 Q 180 510 120 400 Q 80 280 150 100 Z" />
                 <path className="map-route" d="M 360 94 Q 420 130 466 171 Q 480 180 506 189 Q 530 200 533 342 Q 520 400 426 300 Q 380 250 240 325 Q 200 340 293 514" />
                 
-                {/* 4 CORE PINS */}
                 <g className="map-marker" onClick={() => setActivePlace('salkhan')} transform="translate(466,171)">
-                  <circle className="dot" r="11" />
+                  <circle className="dot" r="12" />
                   <text className="lbl" y="-18">Salkhan Fossils</text>
                 </g>
                 <g className="map-marker" onClick={() => setActivePlace('vijaygarh')} transform="translate(426,300)">
-                  <circle className="dot" r="11" />
+                  <circle className="dot" r="12" />
                   <text className="lbl" y="-18">Vijaygarh Fort</text>
                 </g>
                 <g className="map-marker" onClick={() => setActivePlace('rihand')} transform="translate(293,514)">
-                  <circle className="dot" r="11" />
+                  <circle className="dot" r="12" />
                   <text className="lbl" y="26">Rihand Dam</text>
                 </g>
                 <g className="map-marker" onClick={() => setActivePlace('mukha')} transform="translate(533,342)">
-                  <circle className="dot" r="11" />
+                  <circle className="dot" r="12" />
                   <text className="lbl" y="-18">Mukha Falls</text>
                 </g>
               </svg>
             </div>
 
-            {/* TERRAIN DISPATCH SHEET */}
-            <div className="lg:col-span-5 bg-[#fbf8f2] rounded-2xl p-6 border border-[#c25e36]/30 space-y-4">
+            {/* DETAIL SHEET */}
+            <div className="lg:col-span-5 bg-[#f8f5ee] rounded-2xl p-6 border border-[#c25e36]/30 space-y-4">
               <span className="text-[10px] font-mono font-bold uppercase text-[#c25e36] tracking-wider block">
-                Selected Landmark Telemetry
+                Selected Landmark Dossier
               </span>
-              <h3 className="text-2xl font-black text-[#143525]">{places[activePlace].name}</h3>
-              <p className="text-xs text-[#576b60] leading-relaxed">{places[activePlace].description}</p>
-              
+              <h3 className="text-2xl font-black text-[#0e271a]">{places[activePlace].name}</h3>
+              <p className="text-xs text-stone-600 leading-relaxed">{places[activePlace].highlight}</p>
+
               <div className="space-y-2 pt-2 text-xs font-mono">
-                <div className="flex justify-between py-1.5 border-b border-stone-200">
+                <div className="flex justify-between py-1 border-b border-stone-200">
+                  <span className="text-stone-500">GPS Coordinates:</span>
+                  <span className="font-bold text-[#0e271a]">{places[activePlace].coords}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-stone-200">
+                  <span className="text-stone-500">From District HQ:</span>
+                  <span className="font-bold text-[#c25e36]">{places[activePlace].distanceFromHQ}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-stone-200">
                   <span className="text-stone-500">Elevation:</span>
-                  <span className="font-bold text-[#143525]">{places[activePlace].elevation}</span>
+                  <span className="font-bold text-[#0e271a]">{places[activePlace].elevation}</span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-stone-200">
-                  <span className="text-stone-500">Trail Class:</span>
-                  <span className="font-bold text-[#c25e36]">{places[activePlace].trailDifficulty}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-stone-200">
-                  <span className="text-stone-500">Sunlight Window:</span>
-                  <span className="font-bold text-[#143525]">{places[activePlace].sunlight}</span>
-                </div>
-                <div className="flex justify-between py-1.5">
-                  <span className="text-stone-500">Core Highlight:</span>
-                  <span className="font-bold text-[#143525] text-right max-w-[55%]">{places[activePlace].highlight}</span>
+                <div className="flex justify-between py-1">
+                  <span className="text-stone-500">Terrain:</span>
+                  <span className="font-bold text-[#0e271a]">{places[activePlace].terrain}</span>
                 </div>
               </div>
             </div>
@@ -440,137 +452,160 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 4: INTERACTIVE BACKPACK GEAR CHECKLIST */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="gear">
-        <div className="bg-white rounded-3xl border border-stone-200/80 p-8 sm:p-12 shadow-sm space-y-8">
-          <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 pb-6 border-b border-stone-100">
+      {/* SECTION 3: HOW AN UNKNOWN TRAVELER REACHES SONBHADRA */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="guide">
+        <div className="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 shadow-sm space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="badge-field">First-Timer Transit Guide</span>
+            <h2 className="text-3xl font-black text-[#0e271a]">How to Reach Sonbhadra (Practical Guide)</h2>
+            <p className="text-stone-600 text-sm">
+              Clear transportation guidance for domestic & international visitors arriving via Varanasi or Prayagraj.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+            <div className="p-6 rounded-2xl bg-[#f8f5ee] border border-stone-200 space-y-3">
+              <span className="text-2xl">✈️</span>
+              <h3 className="font-bold text-base text-[#0e271a]">By Flight (Air)</h3>
+              <p className="text-stone-600 leading-relaxed">
+                Nearest airport: <strong>Varanasi International Airport (VNS)</strong>, approx 105 km from Robertsganj.
+              </p>
+              <div className="p-3 bg-white rounded-lg border border-stone-200 text-stone-700">
+                <strong>Taxi Rate:</strong> Pre-paid taxi from VNS Airport to Robertsganj costs ₹2,800 – ₹3,500. Travel time ~2.5 hrs via SH 5A.
+              </div>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-[#f8f5ee] border border-stone-200 space-y-3">
+              <span className="text-2xl">🚆</span>
+              <h3 className="font-bold text-base text-[#0e271a]">By Train (Railways)</h3>
+              <p className="text-stone-600 leading-relaxed">
+                Key stations: <strong>Sonbhadra (Robertsganj - LUSA/CUK)</strong>, <strong>Chopan</strong>, <strong>Renukoot</strong>.
+              </p>
+              <div className="p-3 bg-white rounded-lg border border-stone-200 text-stone-700">
+                <strong>Major Junctions:</strong> Pt. Deen Dayal Upadhyaya Jn (DDU) or Mirzapur (MZP). Trains & shared cabs connect frequently.
+              </div>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-[#f8f5ee] border border-stone-200 space-y-3">
+              <span className="text-2xl">🚗</span>
+              <h3 className="font-bold text-base text-[#0e271a]">By Bus & Road</h3>
+              <p className="text-stone-600 leading-relaxed">
+                4-Lane Highway (SH 5A Varanasi-Shaktinagar corridor).
+              </p>
+              <div className="p-3 bg-white rounded-lg border border-stone-200 text-stone-700">
+                <strong>State Buses:</strong> UPSRTC AC & ordinary buses run every 30 minutes from Varanasi Cantt Bus Station to Robertsganj (Fare: ₹120 – ₹240).
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4: OFFLINE JUNGLE SURVIVAL PROTOCOL */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" id="survival">
+        <div className="p-8 sm:p-12 rounded-3xl bg-[#0e271a] text-white shadow-xl space-y-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
             <div>
-              <span className="expedition-stamp">Field Readiness</span>
-              <h2 className="text-3xl font-black text-[#143525] mt-1">What to Pack in Your Backpack</h2>
-              <p className="text-[#576b60] text-sm mt-1">Recommended gear tailored to Sonbhadra’s unique Vindhyan terrain.</p>
+              <span className="text-amber-300 font-mono text-xs uppercase tracking-wider font-bold block">Jungle Survival Protocol</span>
+              <h2 className="text-3xl font-black text-white mt-1">Zero Network in Kaimur? Read This First.</h2>
             </div>
-
-            {/* TAB SELECTOR */}
-            <div className="flex bg-[#fbf8f2] p-1.5 rounded-xl border border-stone-200 text-xs font-mono font-bold">
-              <button 
-                onClick={() => setGearCategory('trekker')} 
-                className={`py-2 px-4 rounded-lg transition ${gearCategory === 'trekker' ? 'bg-[#143525] text-white' : 'text-stone-600'}`}
-              >
-                🥾 Day Trekker
-              </button>
-              <button 
-                onClick={() => setGearCategory('water')} 
-                className={`py-2 px-4 rounded-lg transition ${gearCategory === 'water' ? 'bg-[#143525] text-white' : 'text-stone-600'}`}
-              >
-                🛶 River & Falls
-              </button>
-              <button 
-                onClick={() => setGearCategory('camp')} 
-                className={`py-2 px-4 rounded-lg transition ${gearCategory === 'camp' ? 'bg-[#143525] text-white' : 'text-stone-600'}`}
-              >
-                🏕️ Night Camp
-              </button>
-            </div>
+            <button 
+              onClick={() => setSurvivalModalOpen(true)}
+              className="btn-terracotta bg-[#c25e36]"
+            >
+              Open Complete Survival Dossier
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {gearItems[gearCategory].map((g, idx) => (
-              <div key={idx} className="p-5 rounded-2xl bg-[#fbf8f2] border border-stone-200/70 space-y-2">
-                <span className="w-8 h-8 rounded-lg bg-[#c25e36]/10 text-[#c25e36] flex items-center justify-center font-bold text-sm">
-                  {idx + 1}
-                </span>
-                <h4 className="font-bold text-base text-[#143525]">{g.name}</h4>
-                <p className="text-xs text-[#576b60] leading-relaxed">{g.tip}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+              <span className="text-amber-300 font-bold text-sm block">1. Navigation Without Mobile Signal</span>
+              <p className="text-stone-300 leading-relaxed">
+                Your phone’s GPS chip works via satellite even with 0 signal bars. Open the <strong>Trail Compass</strong> on this page — it calculates coordinates & direction without internet.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+              <span className="text-amber-300 font-bold text-sm block">2. Waterfall Flash Flood Warning</span>
+              <p className="text-stone-300 leading-relaxed">
+                At Mukha Falls & Belan River gorges, heavy rain in catchment hills can cause water levels to surge by 2 meters within 15 minutes. Never swim near gorge drop edges.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+              <span className="text-amber-300 font-bold text-sm block">3. Night Wildlife Corridor</span>
+              <p className="text-stone-300 leading-relaxed">
+                Vijaygarh and Naugarh forests border wildlife belts with sloth bears & leopards. Descend forts before 05:30 PM. Always carry a whistle & torch.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 5: EXPEDITION COST CALCULATOR */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto" id="planner">
-        <div className="bg-white rounded-3xl border border-stone-200/80 p-8 sm:p-12 shadow-sm space-y-8">
+      {/* SECTION 5: BUDGET ESTIMATOR */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto" id="planner">
+        <div className="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 shadow-sm space-y-6">
           <div className="text-center space-y-2">
-            <span className="expedition-stamp">Transparent District Tariffs</span>
-            <h2 className="text-3xl font-black text-[#143525]">Expedition Budget Estimator</h2>
-            <p className="text-[#576b60] text-sm">Real pricing for verified eco-guides, local permits, and sanitized dome camps.</p>
+            <span className="badge-field">Transparent Planning</span>
+            <h2 className="text-3xl font-black text-[#0e271a]">Expedition Cost Calculator</h2>
+            <p className="text-stone-600 text-sm">Honest district rates for guided nature trails, permits, and sanitised eco-camps.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-1">
-              <label className="text-xs font-mono font-bold text-stone-500 uppercase">Expedition Days</label>
-              <select 
-                value={calcDays} 
-                onChange={(e) => setCalcDays(Number(e.target.value))}
-                className="w-full bg-[#fbf8f2] border border-stone-300 rounded-xl p-3 text-sm font-bold text-[#143525]"
-              >
-                <option value={1}>1 Day Expedition</option>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+            <div>
+              <label className="text-stone-500 font-bold uppercase block mb-1">Days</label>
+              <select value={calcDays} onChange={(e) => setCalcDays(Number(e.target.value))} className="w-full bg-[#f8f5ee] border p-3 rounded-xl font-bold">
+                <option value={1}>1 Day Discovery</option>
                 <option value={2}>2 Days / 1 Night</option>
                 <option value={3}>3 Days / 2 Nights</option>
               </select>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-mono font-bold text-stone-500 uppercase">Travelers ({calcGuests} Pax)</label>
-              <input 
-                type="range" 
-                min="1" 
-                max="12" 
-                value={calcGuests} 
-                onChange={(e) => setCalcGuests(Number(e.target.value))}
-                className="w-full mt-3 accent-[#c25e36]"
-              />
-              <span className="text-[11px] font-mono text-stone-400">{calcGuests} Explorers</span>
+            <div>
+              <label className="text-stone-500 font-bold uppercase block mb-1">Travelers ({calcGuests})</label>
+              <input type="range" min="1" max="10" value={calcGuests} onChange={(e) => setCalcGuests(Number(e.target.value))} className="w-full mt-3 accent-[#c25e36]" />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-mono font-bold text-stone-500 uppercase">Adventure Guide</label>
-              <select 
-                value={calcAddon} 
-                onChange={(e) => setCalcAddon(Number(e.target.value))}
-                className="w-full bg-[#fbf8f2] border border-stone-300 rounded-xl p-3 text-sm font-bold text-[#143525]"
-              >
-                <option value={1500}>Authorized Geo-Naturalist (+₹1,500)</option>
-                <option value={2500}>Astro-Photography Night Guide (+₹2,500)</option>
+            <div>
+              <label className="text-stone-500 font-bold uppercase block mb-1">Guide Service</label>
+              <select value={calcAddon} onChange={(e) => setCalcAddon(Number(e.target.value))} className="w-full bg-[#f8f5ee] border p-3 rounded-xl font-bold">
+                <option value={1500}>Verified Geo-Guide (+₹1,500)</option>
                 <option value={0}>Self-Guided Only</option>
               </select>
             </div>
           </div>
 
-          {/* TOTAL STRIP */}
-          <div className="p-6 rounded-2xl bg-[#143525] text-white flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="p-6 rounded-2xl bg-[#0e271a] text-white flex flex-col sm:flex-row justify-between items-center gap-4 font-mono">
             <div>
-              <span className="text-[10px] font-mono uppercase text-amber-300 font-bold block">Estimated Package (Incl. 18% GST)</span>
-              <span className="text-3xl font-black text-white">₹{totalEstimate.toLocaleString('en-IN')}</span>
+              <span className="text-[10px] text-amber-300 uppercase block">Estimated Budget</span>
+              <span className="text-3xl font-black">₹{totalEstimate.toLocaleString('en-IN')}</span>
             </div>
-
             <a 
-              href={`https://wa.me/917355053822?text=Hello%20Son%20Adventure,%20I%20want%20to%20reserve%20a%20${calcDays}-Day%20expedition%20for%20${calcGuests}%20guests%20(Estimated%20₹${totalEstimate.toLocaleString('en-IN')}).`}
+              href={`https://wa.me/917355053822?text=Hello%20Son%20Adventure,%20I%20want%20to%20plan%20a%20trip%20for%20${calcGuests}%20travelers%20for%20${calcDays}%20days.`}
               target="_blank" 
               rel="noopener noreferrer" 
-              className="btn-adventure bg-[#c25e36] text-white"
+              className="btn-terracotta bg-[#c25e36]"
             >
-              <i className="fab fa-whatsapp text-base" />
-              <span>Lock Dates on WhatsApp</span>
+              <i className="fab fa-whatsapp" />
+              <span>Connect on WhatsApp</span>
             </a>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#143525] text-[#fbf8f2] py-12 px-6 text-xs font-mono">
+      <footer className="bg-[#0e271a] text-stone-300 py-12 px-6 text-xs font-mono">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/10 pb-8">
           <div>
-            <span className="text-xl font-serif font-black text-white">SON<span className="text-[#c25e36] italic">ADVENTURE</span></span>
-            <p className="text-stone-300 text-xs mt-1">Official Destination Discovery Platform for Sonbhadra, Uttar Pradesh.</p>
+            <span className="text-2xl font-serif font-black text-white">SON<span className="text-[#c25e36] italic">ADVENTURE</span></span>
+            <p className="text-stone-400 text-xs mt-1">Official Destination Discovery Platform for Sonbhadra, Uttar Pradesh.</p>
           </div>
-          <div className="flex space-x-6 text-stone-200 font-bold">
-            <a href="tel:+917355053822"><i className="fas fa-phone mr-1.5 text-amber-300" /> +91 73550 53822</a>
-            <a href="mailto:son.doc.tourism@gmail.com"><i className="fas fa-envelope mr-1.5 text-amber-300" /> son.doc.tourism@gmail.com</a>
+          <div className="flex flex-col sm:flex-row gap-4 font-bold text-white">
+            <a href="tel:+917355053822">📞 +91 73550 53822</a>
+            <a href="mailto:son.doc.tourism@gmail.com">✉️ son.doc.tourism@gmail.com</a>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto pt-6 text-center text-stone-400 text-[11px]">
-          © {new Date().getFullYear()} Son Adventure Tours & Eco Tourism · Built for Responsible Travel in Sonbhadra, UP.
+        <div className="max-w-7xl mx-auto pt-6 text-center text-stone-400">
+          © {new Date().getFullYear()} Son Adventure Tours & Eco Tourism · Robertsganj, Sonbhadra, UP, India.
         </div>
       </footer>
 
@@ -578,71 +613,114 @@ export default function HomePage() {
       <div className="dock-outdoor">
         <button 
           onClick={() => { setCompassOpen(true); acquireLocation(); }} 
-          className="dock-btn"
-          aria-label="Open Live GPS Compass"
+          className="dock-btn text-emerald-800"
+          aria-label="Open GPS Compass"
         >
           <i className="fas fa-compass text-[#c25e36] text-base" />
           <span>Trail Compass</span>
         </button>
-        <a 
-          href="https://wa.me/917355053822" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="dock-btn text-emerald-700"
+        <button 
+          onClick={() => setSosModalOpen(true)} 
+          className="dock-btn text-red-700 border-red-300"
         >
-          <i className="fab fa-whatsapp text-emerald-600 text-base" />
-          <span>WhatsApp</span>
-        </a>
+          <i className="fas fa-truck-medical text-red-600 text-base" />
+          <span>SOS Helplines</span>
+        </button>
       </div>
 
-      {/* BRASS EXPEDITION COMPASS MODAL */}
+      {/* REAL LIVE COMPASS MODAL */}
       {compassOpen && (
-        <div 
-          className="expedition-modal" 
-          onClick={(e) => { if (e.target === e.currentTarget) setCompassOpen(false); }}
-        >
-          <div className="modal-content text-center">
-            <button onClick={() => setCompassOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-xl font-bold">✕</button>
-            
-            <span className="expedition-stamp mb-2">Magnetic Field Orientation</span>
-            <h3 className="text-2xl font-black text-[#143525]">Expedition Compass</h3>
-            <p className="text-xs text-[#576b60] mb-6">{compassStatus}</p>
+        <div className="overlay-survival" onClick={(e) => { if (e.target === e.currentTarget) setCompassOpen(false); }}>
+          <div className="modal-box-survival text-center">
+            <button onClick={() => setCompassOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 text-xl font-bold">✕</button>
+            <span className="badge-field mb-2">Live Satellite Vector</span>
+            <h3 className="text-2xl font-black text-[#0e271a]">Trail Gyro-Compass</h3>
+            <p className="text-xs text-stone-500 mb-4">{gpsStatus}</p>
 
-            {/* BRASS DIAL */}
-            <div className="w-52 h-52 mx-auto relative rounded-full border-4 border-[#b45309] bg-[#fbf8f2] flex items-center justify-center shadow-xl">
-              <span className="absolute top-3 font-mono font-bold text-xs text-[#c25e36]">N</span>
-              <span className="absolute right-3 font-mono font-bold text-xs text-stone-400">E</span>
+            {/* COMPASS ROSE */}
+            <div className="w-56 h-56 mx-auto relative rounded-full border-4 border-[#c25e36] bg-[#f8f5ee] flex items-center justify-center shadow-lg my-4">
+              <span className="absolute top-3 font-mono font-bold text-sm text-[#c25e36]">N</span>
+              <span className="absolute right-4 font-mono font-bold text-xs text-stone-400">E</span>
               <span className="absolute bottom-3 font-mono font-bold text-xs text-stone-400">S</span>
-              <span className="absolute left-3 font-mono font-bold text-xs text-stone-400">W</span>
+              <span className="absolute left-4 font-mono font-bold text-xs text-stone-400">W</span>
 
-              {/* DYNAMIC ROTATING NEEDLE */}
+              {/* ROTATING NEEDLE */}
               <div 
                 className="w-full h-full flex items-center justify-center transition-transform duration-700 ease-out"
                 style={{ transform: `rotate(${bearingDeg}deg)` }}
               >
-                <div className="w-2.5 h-20 bg-[#c25e36] rounded-t-full absolute top-5 shadow-md" />
-                <div className="w-2 h-14 bg-stone-400 rounded-b-full absolute bottom-7 opacity-70" />
-                <div className="w-5 h-5 rounded-full bg-[#143525] border-2 border-white z-20" />
+                <div className="w-3 h-24 bg-[#c25e36] rounded-t-full absolute top-4 shadow" />
+                <div className="w-2.5 h-16 bg-stone-400 rounded-b-full absolute bottom-8 opacity-60" />
+                <div className="w-6 h-6 rounded-full bg-[#0e271a] border-2 border-white z-20" />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 my-6 font-mono text-center">
-              <div className="bg-[#fbf8f2] p-3 rounded-xl border border-stone-200">
-                <span className="text-[10px] text-stone-400 uppercase block">Distance</span>
-                <span className="text-lg font-bold text-[#143525]">{distanceKm > 0 ? `${distanceKm.toLocaleString()} km` : '--'}</span>
+            <div className="grid grid-cols-2 gap-3 my-4 font-mono text-center text-xs">
+              <div className="bg-[#f8f5ee] p-3 rounded-xl border border-stone-200">
+                <span className="text-stone-400 block uppercase">Straight Line Distance</span>
+                <span className="text-xl font-bold text-[#0e271a]">{distanceKm > 0 ? `${distanceKm} km` : '--'}</span>
               </div>
-              <div className="bg-[#fbf8f2] p-3 rounded-xl border border-stone-200">
-                <span className="text-[10px] text-stone-400 uppercase block">Heading</span>
-                <span className="text-lg font-bold text-[#c25e36]">{bearingDeg}° {cardinalDir}</span>
+              <div className="bg-[#f8f5ee] p-3 rounded-xl border border-stone-200">
+                <span className="text-stone-400 block uppercase">True Bearing</span>
+                <span className="text-xl font-bold text-[#c25e36]">{bearingDeg}° {cardinalDir}</span>
               </div>
             </div>
 
-            <button 
-              onClick={acquireLocation} 
-              className="btn-adventure w-full justify-center"
-            >
+            <button onClick={acquireLocation} className="btn-terracotta w-full justify-center">
               Re-Sync Satellite Coordinates
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* SOS EMERGENCY NUMBERS MODAL */}
+      {sosModalOpen && (
+        <div className="overlay-survival" onClick={(e) => { if (e.target === e.currentTarget) setSosModalOpen(false); }}>
+          <div className="modal-box-survival space-y-4">
+            <button onClick={() => setSosModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 text-xl font-bold">✕</button>
+            <span className="badge-field text-red-700 border-red-300">District Emergency SOS</span>
+            <h3 className="text-2xl font-black text-[#0e271a]">Sonbhadra Helplines</h3>
+            <p className="text-xs text-stone-600">Saved offline in your device. Tap any number to call immediately.</p>
+
+            <div className="space-y-3 font-mono text-xs pt-2">
+              {emergencyContacts.map((c, i) => (
+                <div key={i} className="p-4 rounded-xl bg-stone-50 border border-stone-200 flex justify-between items-center">
+                  <div>
+                    <h4 className="font-bold text-sm text-[#0e271a]">{c.title}</h4>
+                    <p className="text-[11px] text-stone-500">{c.desc}</p>
+                  </div>
+                  <a href={`tel:${c.number}`} className="bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
+                    Call {c.number}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* OFFLINE SURVIVAL KIT MODAL */}
+      {survivalModalOpen && (
+        <div className="overlay-survival" onClick={(e) => { if (e.target === e.currentTarget) setSurvivalModalOpen(false); }}>
+          <div className="modal-box-survival space-y-4">
+            <button onClick={() => setSurvivalModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 text-xl font-bold">✕</button>
+            <span className="badge-field">Offline Safety Protocol</span>
+            <h3 className="text-2xl font-black text-[#0e271a]">Lost in the Jungle? Essential Steps</h3>
+
+            <div className="space-y-3 text-xs leading-relaxed text-stone-700">
+              <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <strong>1. Conserve Phone Battery:</strong> Turn on Airplane mode but keep GPS location turned ON. GPS does not consume cellular data.
+              </div>
+              <div className="p-3 bg-stone-50 rounded-lg border border-stone-200">
+                <strong>2. Head Toward Streams Downhill:</strong> In Sonbhadra’s Vindhyan terrain, all seasonal streams lead down towards populated villages or main road culverts.
+              </div>
+              <div className="p-3 bg-stone-50 rounded-lg border border-stone-200">
+                <strong>3. Snake Bite First Aid:</strong> Keep patient calm. Do not cut or suck wound. Immobilize limb with a stick splint. Rush to District Hospital Robertsganj (anti-venom available 24/7).
+              </div>
+              <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200 text-emerald-900">
+                <strong>✓ Safe Refuge Points:</strong> Robertsganj Forest Range Office, Churk Railway Station, Mau Kalan Gram Panchayat base.
+              </div>
+            </div>
           </div>
         </div>
       )}
