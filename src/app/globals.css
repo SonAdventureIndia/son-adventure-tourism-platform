@@ -1,22 +1,11 @@
-/* ============ BULLETPROOF OUTDOOR PRODUCTION CSS ============ */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --bg-sand: #fcfaf6;
-  --bg-card: #ffffff;
-  --forest-dark: #0e261a;
-  --forest-mid: #1b432e;
-  --terracotta: #c85a32;
-  --terracotta-hover: #b04924;
-  --amber-warm: #d4a340;
-  --text-dark: #122118;
-  --text-muted: #4e6055;
-  --card-border: rgba(14, 38, 26, 0.08);
-  --card-border-focus: rgba(200, 90, 50, 0.35);
-  --card-shadow: 0 4px 20px -2px rgba(14, 38, 26, 0.06);
-  --serif: 'Fraunces', serif;
-  --sans: 'Manrope', sans-serif;
-  --mono: 'Space Grotesk', monospace;
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -25,194 +14,25 @@ html {
 }
 
 body {
-  font-family: var(--sans);
-  background-color: var(--bg-sand);
-  color: var(--text-dark);
-  line-height: 1.55;
+  background-color: #fdfbf7;
+  color: #122118;
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4 {
-  font-family: var(--serif);
-  font-weight: 800;
-  color: var(--forest-dark);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #fdfbf7;
+}
+::-webkit-scrollbar-thumb {
+  background: #1b4d34;
+  border-radius: 3px;
 }
 
-a { text-decoration: none; color: inherit; }
-button { font-family: inherit; border: none; background: none; cursor: pointer; }
-
-/* Scoped Cards */
-.son-card {
-  background: var(--bg-card);
-  border: 1px solid var(--card-border);
-  border-radius: 16px;
-  box-shadow: var(--card-shadow);
-  transition: all 0.25s ease;
-}
-.son-card:hover {
-  border-color: var(--card-border-focus);
-  box-shadow: 0 8px 30px -4px rgba(14, 38, 26, 0.1);
-}
-
-/* Scoped Badges */
-.badge-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.22rem 0.65rem;
-  border-radius: 50px;
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background: rgba(14, 38, 26, 0.05);
-  border: 1px solid rgba(14, 38, 26, 0.14);
-  color: var(--forest-dark);
-}
-
-/* Nav */
-.son-nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(252, 250, 246, 0.96);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--card-border);
-  padding: 0.75rem 1rem;
-}
-
-/* Action Buttons */
-.btn-primary-action {
-  background: var(--terracotta);
-  color: #ffffff;
-  padding: 0.65rem 1.15rem;
-  border-radius: 10px;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  box-shadow: 0 4px 14px rgba(200, 90, 50, 0.3);
-  transition: all 0.2s ease;
-}
-.btn-primary-action:hover {
-  background: var(--terracotta-hover);
-  transform: translateY(-1px);
-}
-
-.btn-forest-action {
-  background: var(--forest-dark);
-  color: #ffffff;
-  padding: 0.65rem 1.15rem;
-  border-radius: 10px;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  transition: all 0.2s ease;
-}
-.btn-forest-action:hover {
-  background: var(--forest-mid);
-  transform: translateY(-1px);
-}
-
-/* Map SVG */
-.map-district-outline {
-  fill: rgba(20, 53, 37, 0.03);
-  stroke: rgba(20, 53, 37, 0.25);
-  stroke-width: 2;
-  stroke-dasharray: 6 6;
-}
-.map-route-line {
-  fill: none;
-  stroke: var(--terracotta);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-.map-marker-pin {
-  cursor: pointer;
-  transition: transform 0.25s;
-}
-.map-marker-pin:hover {
-  transform: scale(1.2);
-}
-.map-marker-pin .dot {
-  fill: var(--terracotta);
-  stroke: #ffffff;
-  stroke-width: 3;
-}
-.map-marker-pin .lbl {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  fill: var(--forest-dark);
-  text-anchor: middle;
-}
-
-/* Modals */
-.son-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(14, 38, 26, 0.55);
-  backdrop-filter: blur(8px);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-.son-modal-box {
-  background: #ffffff;
-  border: 1px solid var(--card-border);
-  border-radius: 20px;
-  width: 100%;
-  max-width: 480px;
-  max-height: 88vh;
-  overflow-y: auto;
-  padding: 1.5rem;
-  box-shadow: 0 25px 60px -10px rgba(14, 38, 26, 0.25);
-}
-
-/* Floating Dock */
-.son-dock {
-  position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  z-index: 40;
-  align-items: flex-end;
-}
-.son-dock-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1rem;
-  border-radius: 50px;
-  background: #ffffff;
-  border: 1px solid var(--card-border);
-  color: var(--forest-dark);
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  box-shadow: 0 6px 18px rgba(14, 38, 26, 0.08);
-  transition: all 0.2s ease;
-}
-.son-dock-btn:hover {
-  border-color: var(--terracotta);
-  color: var(--terracotta);
-  transform: translateX(-2px);
+/* Subtle Topo Pattern */
+.bg-topo {
+  background-image: radial-gradient(rgba(14, 38, 26, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
