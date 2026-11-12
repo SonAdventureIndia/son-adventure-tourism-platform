@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Son Adventure · Official Sonbhadra Tourism & Monsoon Wilderness Portal',
+  title: 'Son Adventure · Official Sonbhadra Tourism & Outdoor Exploration Portal',
   description: '1.4-billion-year fossils, cliffside forts, roaring waterfalls, live satellite compass, real-time weather radar, and offline jungle survival guide for Sonbhadra, Uttar Pradesh.',
 };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -8,12 +8,8 @@ import Footer from '@/components/Footer';
 const SONBHADRA_DATUM = { lat: 24.6856, lng: 83.0689 };
 
 export default function HomePage() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  // Atmospheric Sensory Controls
-  const [rainActive, setRainActive] = useState(true);
-  const [soundPlaying, setSoundPlaying] = useState(false);
-  const audioContextRef = useRef<any>(null);
+  // Hero Spot Switcher State (Allows switching background & details live!)
+  const [heroSpot, setHeroSpot] = useState<'salkhan' | 'vijaygarh' | 'rihand' | 'mukha'>('salkhan');
 
   // Modals
   const [compassOpen, setCompassOpen] = useState(false);
@@ -26,32 +22,53 @@ export default function HomePage() {
   const [gpsStatus, setGpsStatus] = useState<string>('Live Satellite Radar Active');
 
   // Weather & Time
-  const [timeStr, setTimeStr] = useState('09:15 AM');
+  const [timeStr, setTimeStr] = useState('09:30 AM');
   const [dateStr, setDateStr] = useState('Loading...');
   const [temp, setTemp] = useState<number | null>(24);
 
   // Map & Elevation Profile State
-  const [activePlace, setActivePlace] = useState('mukha');
+  const [activePlace, setActivePlace] = useState('salkhan');
 
   // Multi-Step In-Page Booking Engine
   const [bookingStep, setBookingStep] = useState(1);
-  const [bookTrail, setBookTrail] = useState('Mukha Falls Canyon Descent & Rainforest Walk');
+  const [bookTrail, setBookTrail] = useState('Salkhan Deep-Time Geo-Walk');
   const [bookPax, setBookPax] = useState(2);
   const [bookDate, setBookDate] = useState('');
   const [bookGuideTier, setBookGuideTier] = useState('Certified Naturalist (+₹1,500)');
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
-  const places: Record<string, any> = {
-    mukha: {
-      title: 'Mukha Falls & Belan River Gorge',
-      badge: 'Torrential Waterfall & Sandstone Canyon',
-      img: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
-      elevationProfile: 'Gorge Rim: 250m → Waterfall Basin: 210m (-40m Descent)',
-      gradient: 'Rocky Amphitheater Descent · Caution on wet stone',
-      desc: 'Cascading natural waterfalls carving deep shelves into the Belan River basin with prehistoric rock painting shelters.',
-      coords: '24.7142° N, 82.7811° E',
-      slug: '/destinations/mukha-waterfall'
+  const heroSpots = {
+    salkhan: {
+      name: 'Salkhan Fossil Geo-Park',
+      tagline: '1.4 Billion Years of Pre-Cambrian Earth History',
+      bg: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=2400&q=80',
+      elevation: '315m',
+      desc: 'Step directly on the ancient prebiotic seafloor where microbial stromatolite colonies produced Earth’s earliest atmospheric oxygen.'
     },
+    vijaygarh: {
+      name: 'Vijaygarh Fort Citadel',
+      tagline: '5th-Century Mountain Fortress in the Clouds',
+      bg: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=2400&q=80',
+      elevation: '430m',
+      desc: 'Ascend 500+ hand-cut stone steps overlooking the Son River valley. Explore ancient Gupta inscriptions and perennial mountain lakes.'
+    },
+    rihand: {
+      name: 'Rihand Inland Sea (GBP Sagar)',
+      tagline: 'Asia’s Immense Freshwater Reservoir',
+      bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2400&q=80',
+      elevation: '275m',
+      desc: 'Miles of tranquil freshwater coastline nestled within forested hills. Sunset lookouts and shoreline camping retreats.'
+    },
+    mukha: {
+      name: 'Mukha Falls & Belan Gorge',
+      tagline: 'Tiered River Cascades & Sandstone Overhangs',
+      bg: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=2400&q=80',
+      elevation: '210m',
+      desc: 'Spectacular cascades plunging into natural amphitheater sandstone shelves surrounded by prehistoric rock painting shelters.'
+    }
+  };
+
+  const places: Record<string, any> = {
     salkhan: {
       title: 'Salkhan Fossil Geo-Park',
       badge: 'Geological Wonder · 1.4B Years',
@@ -81,114 +98,18 @@ export default function HomePage() {
       desc: 'Govind Ballabh Pant Sagar reservoir spanning the UP-MP border with pine-fringed sunset lookouts.',
       coords: '24.2044° N, 83.0336° E',
       slug: '/destinations/rihand-reservoir'
+    },
+    mukha: {
+      title: 'Mukha Falls & Belan Gorge',
+      badge: 'Tiered Sandstone Canyon',
+      img: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
+      elevationProfile: 'Gorge Rim: 250m → Waterfall Basin: 210m (-40m Descent)',
+      gradient: 'Rocky Amphitheater Descent · Caution on wet stone',
+      desc: 'Cascading natural waterfalls carving deep shelves into the Belan River basin with prehistoric rock painting shelters.',
+      coords: '24.7142° N, 82.7811° E',
+      slug: '/destinations/mukha-waterfall'
     }
   };
-
-  // 1. Procedural Rainforest & Waterfall Audio Engine (Web Audio API)
-  const toggleSound = () => {
-    try {
-      if (!soundPlaying) {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-        const ctx = new AudioCtx();
-        audioContextRef.current = ctx;
-
-        const bufferSize = ctx.sampleRate * 2;
-        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          output[i] = (Math.random() * 2 - 1) * 0.35;
-        }
-
-        const whiteNoise = ctx.createBufferSource();
-        whiteNoise.buffer = noiseBuffer;
-        whiteNoise.loop = true;
-
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 600;
-
-        const gainNode = ctx.createGain();
-        gainNode.gain.value = 0.16;
-
-        whiteNoise.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        whiteNoise.start(0);
-        setSoundPlaying(true);
-      } else {
-        if (audioContextRef.current) {
-          audioContextRef.current.close();
-        }
-        setSoundPlaying(false);
-      }
-    } catch (e) {
-      console.warn('Audio synthesis not supported or permitted');
-    }
-  };
-
-  // 2. Realistic Canvas Rain Particle Engine
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animId: number;
-    let width = (canvas.width = canvas.offsetWidth);
-    let height = (canvas.height = canvas.offsetHeight);
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = canvas.offsetWidth;
-      height = canvas.height = canvas.offsetHeight;
-    };
-    window.addEventListener('resize', handleResize);
-
-    const drops: Array<{ x: number; y: number; speed: number; length: number; opacity: number; wind: number }> = [];
-    const count = rainActive ? 180 : 35;
-
-    for (let i = 0; i < count; i++) {
-      drops.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        speed: rainActive ? 18 + Math.random() * 12 : 3 + Math.random() * 4,
-        length: rainActive ? 16 + Math.random() * 14 : 2 + Math.random() * 3,
-        opacity: 0.25 + Math.random() * 0.5,
-        wind: rainActive ? -1.8 - Math.random() * 1.5 : 0.2
-      });
-    }
-
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-      for (let i = 0; i < drops.length; i++) {
-        const d = drops[i];
-        ctx.beginPath();
-        ctx.strokeStyle = rainActive ? `rgba(200, 230, 255, ${d.opacity})` : `rgba(212, 165, 55, ${d.opacity * 0.4})`;
-        ctx.lineWidth = rainActive ? 1.4 : 1;
-        ctx.lineCap = 'round';
-        ctx.moveTo(d.x, d.y);
-        ctx.lineTo(d.x + d.wind * (d.length / 5), d.y + d.length);
-        ctx.stroke();
-
-        d.y += d.speed;
-        d.x += d.wind;
-
-        if (d.y > height) {
-          d.y = -20;
-          d.x = Math.random() * (width + 100);
-        }
-      }
-      animId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [rainActive]);
 
   // Haversine & Live Bearing Calculation
   const calcMath = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -261,46 +182,49 @@ export default function HomePage() {
           onOpenSos={() => setSosModalOpen(true)} 
         />
 
-        {/* 1. CINEMATIC MONSOON JUNGLE HERO (CANVAS RAIN & SENSORY CONTROLS) */}
-        <header className="hero-jungle relative" id="home">
+        {/* 1. CINEMATIC HERO WITH LIVE SPOT-SWITCHER HUD */}
+        <header className="hero-architect relative" id="home">
           <div 
-            className="hero-jungle-bg" 
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=2400&q=80')" }} 
+            className="hero-architect-bg" 
+            style={{ backgroundImage: `url('${heroSpots[heroSpot].bg}')` }} 
           />
-          <canvas ref={canvasRef} className="rain-canvas" />
-          <div className="mist-vignette" />
+          <div className="hero-architect-overlay" />
 
-          <div className="hero-jungle-content">
-            {/* Sensory Weather & Sound Toggles */}
+          <div className="hero-architect-content">
+            {/* SPOT SWITCHER BUTTONS (Directly in Hero) */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
-              <button 
-                onClick={() => setRainActive(!rainActive)}
-                className={`py-1.5 px-3.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition border flex items-center space-x-1.5 shadow-lg ${rainActive ? 'bg-cyan-950/80 text-cyan-300 border-cyan-500/50' : 'bg-stone-900/80 text-stone-300 border-white/20'}`}
-              >
-                <span>{rainActive ? '🌧️ Monsoon Rain: Active' : '☀️ Sunlit Plateau Mode'}</span>
-              </button>
-
-              <button 
-                onClick={toggleSound}
-                className={`py-1.5 px-3.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition border flex items-center space-x-1.5 shadow-lg ${soundPlaying ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/50' : 'bg-stone-900/80 text-stone-300 border-white/20'}`}
-              >
-                <span>{soundPlaying ? '🔊 Waterfall Ambience: Playing' : '🔇 Play Jungle Waterfall Sound'}</span>
-              </button>
+              <span className="text-[10px] font-mono uppercase font-bold text-stone-300 mr-1 hidden sm:inline">
+                Inspect Landmark:
+              </span>
+              {[
+                { id: 'salkhan', label: '🌋 Salkhan Fossils' },
+                { id: 'vijaygarh', label: '🏰 Vijaygarh Citadel' },
+                { id: 'rihand', label: '🛶 Rihand Reservoir' },
+                { id: 'mukha', label: '🌊 Mukha Waterfalls' },
+              ].map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => setHeroSpot(s.id as any)}
+                  className={`py-1.5 px-3 rounded-xl text-xs font-mono font-bold tracking-wider transition border shadow-lg ${heroSpot === s.id ? 'bg-[#d4a537] text-[#081710] border-[#d4a537]' : 'bg-black/50 text-white border-white/20 hover:border-amber-300'}`}
+                >
+                  {s.label}
+                </button>
+              ))}
             </div>
 
-            <div className="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider mb-3">
-              <i className="fas fa-water text-cyan-400" />
-              <span>Wilderness & Riverine Gateway · Sonbhadra, UP</span>
+            <div className="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider mb-2">
+              <i className="fas fa-mountain-sun text-amber-400" />
+              <span>Official Tourism Gateway · Sonbhadra, UP</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black text-white leading-[1.08] drop-shadow-md">
-              Ancient River Gorges. <br className="hidden sm:inline" />
-              <span className="text-[#e9c974] italic">Torrential Waterfalls. Real Wild.</span>
+              {heroSpots[heroSpot].name} <br />
+              <span className="text-[#e9c974] italic">{heroSpots[heroSpot].tagline}</span>
             </h1>
 
             <div className="flex items-center space-x-3 bg-black/50 backdrop-blur-md border border-white/15 p-3 rounded-2xl max-w-lg my-4">
-              <div className="w-9 h-9 rounded-xl bg-[#d4a537] text-forest-950 flex items-center justify-center font-bold text-sm shrink-0">
-                <i className="fas fa-compass" />
+              <div className="w-9 h-9 rounded-xl bg-[#d4a537] text-pine-950 flex items-center justify-center font-bold text-sm shrink-0">
+                <i className="fas fa-location-dot" />
               </div>
               <div className="text-xs">
                 <span className="text-amber-300 font-mono font-bold uppercase text-[10px] block">Live Satellite Navigation Vector</span>
@@ -310,15 +234,15 @@ export default function HomePage() {
             </div>
 
             <p className="text-sm text-stone-200 max-w-xl font-sans leading-relaxed drop-shadow">
-              Feel the misty spray of Mukha Falls, trek the sandstone canyon shelves of Belan river, and walk across 1.4-billion-year-old prebiotic stromatolite fossil beds under ancient Kaimur rains.
+              {heroSpots[heroSpot].desc}
             </p>
 
-            <div className="flex flex-wrap gap-3 pt-3">
+            <div className="flex flex-wrap gap-3 pt-4">
               <Link href="/destinations" className="bg-[#c85a32] hover:bg-[#ac4a26] text-white text-xs font-mono font-bold uppercase tracking-wider py-3 px-6 rounded-xl shadow-lg transition">
                 <span>Explore Destinations</span>
                 <i className="fas fa-arrow-right ml-1.5 text-[10px]" />
               </Link>
-              <a href="#booking-engine" className="bg-forest-950/90 hover:bg-forest-900 text-white border border-white/20 text-xs font-mono font-bold uppercase tracking-wider py-3 px-6 rounded-xl transition backdrop-blur-md">
+              <a href="#booking-engine" className="bg-pine-950/90 hover:bg-pine-900 text-white border border-white/20 text-xs font-mono font-bold uppercase tracking-wider py-3 px-6 rounded-xl transition backdrop-blur-md">
                 <i className="fas fa-calendar-check mr-1 text-gold-400" />
                 <span>Permit & Booking Engine</span>
               </a>
@@ -340,8 +264,8 @@ export default function HomePage() {
               <strong className="text-white text-sm font-serif">{temp ? `${temp}°C` : '24°C'}</strong>
             </div>
             <div className="text-center">
-              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-droplet mr-1 text-cyan-400" /> River Condition</span>
-              <strong className="text-cyan-300 text-sm">Full Cascade Flow</strong>
+              <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-mountain mr-1 text-emerald-400" /> Active Elevation</span>
+              <strong className="text-emerald-300 text-sm">{heroSpots[heroSpot].elevation} MSL</strong>
             </div>
             <div className="text-center">
               <span className="text-stone-400 text-[10px] uppercase font-bold block"><i className="fas fa-satellite mr-1 text-gold-400" /> Satellite Radar</span>
@@ -351,24 +275,17 @@ export default function HomePage() {
         </header>
 
         {/* 2. INFINITE SCROLLING MARQUEE */}
-        <div className="marquee">
-          <div className="marquee-track">
-            <div className="flex items-center space-x-3 text-xs font-mono font-bold text-[#0a1410] uppercase px-4">
-              <span>✦ Mukha River Falls</span>
-              <span>✦ Salkhan Prehistoric Strata (1.4B Yrs)</span>
-              <span>✦ Vijaygarh Fortress Citadel (430m)</span>
-              <span>✦ Rihand Inland Sea Reservoir</span>
-              <span>✦ Kaimur Wildlife Rainforest Belt</span>
-              <span>✦ Lakhaniya Prehistoric Cave Overhangs</span>
-            </div>
-            <div className="flex items-center space-x-3 text-xs font-mono font-bold text-[#0a1410] uppercase px-4">
-              <span>✦ Mukha River Falls</span>
-              <span>✦ Salkhan Prehistoric Strata (1.4B Yrs)</span>
-              <span>✦ Vijaygarh Fortress Citadel (430m)</span>
-              <span>✦ Rihand Inland Sea Reservoir</span>
-              <span>✦ Kaimur Wildlife Rainforest Belt</span>
-              <span>✦ Lakhaniya Prehistoric Cave Overhangs</span>
-            </div>
+        <div className="bg-[#d4a537] py-2.5 overflow-hidden border-y border-[#a87d22]">
+          <div className="flex space-x-6 text-xs font-mono font-bold text-[#081710] uppercase whitespace-nowrap">
+            <span>✦ Salkhan Stromatolites (1.4B Yrs)</span>
+            <span>✦ Vijaygarh Fortress Citadel (430m)</span>
+            <span>✦ Rihand Inland Sea Reservoir</span>
+            <span>✦ Mukha River Cascades</span>
+            <span>✦ Kaimur Wildlife Sanctuary</span>
+            <span>✦ Lakhaniya Prehistoric Cave Overhangs</span>
+            <span>✦ Salkhan Stromatolites (1.4B Yrs)</span>
+            <span>✦ Vijaygarh Fortress Citadel (430m)</span>
+            <span>✦ Rihand Inland Sea Reservoir</span>
           </div>
         </div>
 
@@ -378,7 +295,7 @@ export default function HomePage() {
             <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32] bg-white border border-stone-200 px-3 py-1 rounded-full">
               Terrain Telemetry & Cross-Section
             </span>
-            <h2 className="text-3xl sm:text-4xl font-serif font-black text-[#0a1410]">
+            <h2 className="text-3xl sm:text-4xl font-serif font-black text-[#081710]">
               The Four Expedition Pillars
             </h2>
             <p className="text-xs sm:text-sm text-stone-600 font-sans">
@@ -397,7 +314,7 @@ export default function HomePage() {
                 >
                   <div>
                     <span className="text-[10px] font-mono uppercase font-bold text-[#c85a32] block">{p.badge}</span>
-                    <h3 className="font-bold text-base font-serif text-[#0a1410]">{p.title}</h3>
+                    <h3 className="font-bold text-base font-serif text-[#081710]">{p.title}</h3>
                     <p className="text-xs text-stone-500 font-mono mt-0.5">{p.coords}</p>
                   </div>
                   <span className="text-xs font-mono font-bold text-[#c85a32]">Inspect →</span>
@@ -409,14 +326,14 @@ export default function HomePage() {
             <div className="lg:col-span-7 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-4">
               <div className="h-48 rounded-2xl overflow-hidden relative">
                 <img src={places[activePlace].img} alt={places[activePlace].title} className="w-full h-full object-cover" />
-                <span className="absolute bottom-3 left-3 bg-[#0a1410]/90 text-white font-mono text-[10px] font-bold px-2.5 py-1 rounded-md">
+                <span className="absolute bottom-3 left-3 bg-[#081710]/90 text-white font-mono text-[10px] font-bold px-2.5 py-1 rounded-md">
                   Elevation: {places[activePlace].elevationProfile}
                 </span>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold font-serif text-[#0a1410]">{places[activePlace].title}</h3>
+                  <h3 className="text-2xl font-bold font-serif text-[#081710]">{places[activePlace].title}</h3>
                   <Link href={places[activePlace].slug} className="text-xs font-mono font-bold text-[#c85a32] hover:underline">
                     Read Dedicated Dossier →
                   </Link>
@@ -427,7 +344,7 @@ export default function HomePage() {
               {/* ELEVATION CROSS-SECTION CHART */}
               <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
                 <div className="flex justify-between text-xs font-mono">
-                  <span className="font-bold text-[#0a1410]">Trail Elevation Cross-Section:</span>
+                  <span className="font-bold text-[#081710]">Trail Elevation Cross-Section:</span>
                   <span className="text-stone-500">{places[activePlace].gradient}</span>
                 </div>
                 <div className="h-16 w-full">
@@ -435,7 +352,7 @@ export default function HomePage() {
                     <path d="M 0 60 Q 150 50 300 20 T 600 10 L 600 80 L 0 80 Z" fill="rgba(200, 90, 50, 0.15)" />
                     <path d="M 0 60 Q 150 50 300 20 T 600 10" fill="none" stroke="#c85a32" strokeWidth="2.5" />
                     <circle cx="300" cy="20" r="3" fill="#c85a32" />
-                    <text x="290" y="15" fill="#c85a32" fontSize="10" fontFamily="Space Grotesk">Summit/Drop</text>
+                    <text x="290" y="15" fill="#c85a32" fontSize="10" fontFamily="Space Grotesk">Peak</text>
                   </svg>
                 </div>
               </div>
@@ -450,7 +367,7 @@ export default function HomePage() {
               <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32] bg-orange-50 border border-orange-200 px-3 py-1 rounded-full">
                 Interactive Permit & Expedition Engine
               </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-black text-[#0a1410]">
+              <h2 className="text-2xl sm:text-3xl font-serif font-black text-[#081710]">
                 Apply for Official Eco-Trail Expedition
               </h2>
               <p className="text-xs text-stone-500 font-mono">
@@ -483,11 +400,11 @@ export default function HomePage() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-mono">
                     <div>
                       <label className="text-stone-500 font-bold block mb-1">Select Trail</label>
-                      <select value={bookTrail} onChange={(e) => setBookTrail(e.target.value)} className="w-full bg-white border border-stone-300 rounded-xl p-3 font-bold text-[#0a1410]">
-                        <option>Mukha Falls Canyon Descent & Rainforest Walk</option>
+                      <select value={bookTrail} onChange={(e) => setBookTrail(e.target.value)} className="w-full bg-white border border-stone-300 rounded-xl p-3 font-bold text-[#081710]">
                         <option>Salkhan Deep-Time Geo-Walk</option>
                         <option>Vijaygarh Fort Sunrise Ascent</option>
                         <option>Rihand Lake Shoreline Expedition</option>
+                        <option>Mukha Falls Canyon Descent</option>
                       </select>
                     </div>
 
@@ -498,7 +415,7 @@ export default function HomePage() {
 
                     <div>
                       <label className="text-stone-500 font-bold block mb-1">Expedition Date</label>
-                      <input type="date" value={bookDate} onChange={(e) => setBookDate(e.target.value)} className="w-full bg-white border border-stone-300 rounded-xl p-2.5 font-bold text-[#0a1410]" />
+                      <input type="date" value={bookDate} onChange={(e) => setBookDate(e.target.value)} className="w-full bg-white border border-stone-300 rounded-xl p-2.5 font-bold text-[#081710]" />
                     </div>
 
                     <div className="sm:col-span-3 pt-3 flex justify-end">
@@ -513,7 +430,7 @@ export default function HomePage() {
                   <div className="space-y-4 text-xs font-mono">
                     <div>
                       <label className="text-stone-500 font-bold block mb-1">Authorized Naturalist & Guide Tier</label>
-                      <select value={bookGuideTier} onChange={(e) => setBookGuideTier(e.target.value)} className="w-full bg-white border border-stone-300 rounded-xl p-3 font-bold text-[#0a1410]">
+                      <select value={bookGuideTier} onChange={(e) => setBookGuideTier(e.target.value)} className="w-full bg-white border border-stone-300 rounded-xl p-3 font-bold text-[#081710]">
                         <option>Certified Naturalist (+₹1,500)</option>
                         <option>Senior Archaeological Guide (+₹2,500)</option>
                         <option>Self-Guided Only (₹0)</option>
@@ -565,7 +482,7 @@ export default function HomePage() {
           <div className="flex justify-between items-end mb-6">
             <div>
               <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32]">Field Dispatches</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-black text-[#0a1410]">Research Blog</h2>
+              <h2 className="text-2xl sm:text-3xl font-serif font-black text-[#081710]">Research Blog</h2>
             </div>
             <Link href="/blog" className="text-xs font-mono font-bold text-[#c85a32] hover:underline">
               View All Dispatches →
@@ -578,7 +495,7 @@ export default function HomePage() {
                 <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80" alt="" className="h-44 w-full object-cover" />
                 <div className="p-4 space-y-1.5">
                   <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">Geology</span>
-                  <h3 className="font-bold text-base font-serif text-[#0a1410] leading-snug">The 1.4 Billion-Year Mystery of Salkhan Stromatolites</h3>
+                  <h3 className="font-bold text-base font-serif text-[#081710] leading-snug">The 1.4 Billion-Year Mystery of Salkhan Stromatolites</h3>
                   <p className="text-xs text-stone-600 line-clamp-2">How cyanobacteria colonies created Earth’s earliest oxygen rings in the Vindhyan basin.</p>
                 </div>
               </div>
@@ -592,7 +509,7 @@ export default function HomePage() {
                 <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80" alt="" className="h-44 w-full object-cover" />
                 <div className="p-4 space-y-1.5">
                   <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">History & Forts</span>
-                  <h3 className="font-bold text-base font-serif text-[#0a1410] leading-snug">Trekking Vijaygarh Fort: The 5th-Century Mountain Citadel</h3>
+                  <h3 className="font-bold text-base font-serif text-[#081710] leading-snug">Trekking Vijaygarh Fort: The 5th-Century Mountain Citadel</h3>
                   <p className="text-xs text-stone-600 line-clamp-2">The mountain-top fortress that inspired Devaki Nandan Khatri's epic novel Chandrakanta.</p>
                 </div>
               </div>
@@ -606,7 +523,7 @@ export default function HomePage() {
                 <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&q=80" alt="" className="h-44 w-full object-cover" />
                 <div className="p-4 space-y-1.5">
                   <span className="text-[10px] font-mono font-bold text-[#c85a32] uppercase">Travel Logistics</span>
-                  <h3 className="font-bold text-base font-serif text-[#0a1410] leading-snug">Varanasi to Sonbhadra Road Trip & Fares Guide</h3>
+                  <h3 className="font-bold text-base font-serif text-[#081710] leading-snug">Varanasi to Sonbhadra Road Trip & Fares Guide</h3>
                   <p className="text-xs text-stone-600 line-clamp-2">Complete highway transit details: pre-paid airport cabs, trains, and state bus schedules.</p>
                 </div>
               </div>
@@ -623,11 +540,11 @@ export default function HomePage() {
 
       {/* COMPASS MODAL */}
       {compassOpen && (
-        <div className="son-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setCompassOpen(false); }}>
-          <div className="son-modal-window text-center">
-            <button onClick={() => setCompassOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 text-lg font-bold">✕</button>
-            <span className="text-[10px] font-mono font-bold uppercase text-[#c85a32] block mb-1">Live Gyro Telemetry</span>
-            <h3 className="text-xl font-serif font-black text-[#0a1410]">Expedition Compass</h3>
+        <div className="fixed inset-0 z-50 bg-[#081710]/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={(e) => { if (e.target === e.currentTarget) setCompassOpen(false); }}>
+          <div className="bg-white rounded-2xl border border-stone-200 w-full max-w-sm p-5 text-center shadow-2xl relative">
+            <button onClick={() => setCompassOpen(false)} className="absolute top-3 right-3 text-stone-400 hover:text-stone-800 text-lg font-bold">✕</button>
+            <span className="text-[10px] font-mono uppercase font-bold text-[#c85a32] block mb-1">Live Satellite Instrument</span>
+            <h3 className="text-xl font-serif font-black text-[#081710]">Expedition Compass</h3>
             <p className="text-xs text-stone-500 font-mono mb-3">{gpsStatus}</p>
 
             <div className="w-48 h-48 mx-auto relative rounded-full border-4 border-[#c85a32] bg-[#fcfaf6] flex items-center justify-center shadow-lg my-3">
@@ -642,14 +559,14 @@ export default function HomePage() {
               >
                 <div className="w-2.5 h-20 bg-[#c85a32] rounded-t-full absolute top-3 shadow" />
                 <div className="w-2 h-14 bg-stone-400 rounded-b-full absolute bottom-6 opacity-60" />
-                <div className="w-5 h-5 rounded-full bg-[#0a1410] border-2 border-white z-20" />
+                <div className="w-5 h-5 rounded-full bg-[#081710] border-2 border-white z-20" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 my-3 font-mono text-center text-xs">
               <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-200">
                 <span className="text-stone-400 block text-[10px]">Distance to Sonbhadra</span>
-                <span className="text-base font-bold text-[#0a1410]">{distanceKm} km</span>
+                <span className="text-base font-bold text-[#081710]">{distanceKm} km</span>
               </div>
               <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-200">
                 <span className="text-stone-400 block text-[10px]">Bearing Angle</span>
@@ -657,7 +574,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <button onClick={acquireLocation} className="btn-primary w-full py-2">
+            <button onClick={acquireLocation} className="bg-[#c85a32] hover:bg-[#ac4a26] text-white font-mono text-xs font-bold py-2.5 px-6 rounded-xl w-full shadow-md transition">
               Re-Calibrate Satellites
             </button>
           </div>
@@ -666,29 +583,29 @@ export default function HomePage() {
 
       {/* SOS MODAL */}
       {sosModalOpen && (
-        <div className="son-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setSosModalOpen(false); }}>
-          <div className="son-modal-window space-y-3">
-            <button onClick={() => setSosModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 text-lg font-bold">✕</button>
-            <span className="text-[10px] font-mono font-bold uppercase text-red-600 block">District Emergency Response</span>
-            <h3 className="text-xl font-serif font-black text-[#0a1410]">Sonbhadra Helplines</h3>
-            <p className="text-xs text-stone-600 font-mono">Saved in offline device cache. Tap any number to call directly.</p>
+        <div className="fixed inset-0 z-50 bg-[#081710]/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={(e) => { if (e.target === e.currentTarget) setSosModalOpen(false); }}>
+          <div className="bg-white rounded-2xl border border-stone-200 w-full max-w-sm p-5 space-y-3 shadow-2xl relative">
+            <button onClick={() => setSosModalOpen(false)} className="absolute top-3 right-3 text-stone-400 hover:text-stone-800 text-lg font-bold">✕</button>
+            <span className="text-[10px] font-mono uppercase font-bold text-red-600 block">District Emergency Desk</span>
+            <h3 className="text-xl font-serif font-black text-[#081710]">Sonbhadra Helplines</h3>
+            <p className="text-xs text-stone-600 font-mono">Saved offline in your device. Tap any number to call directly.</p>
 
-            <div className="space-y-2 pt-2 font-mono text-xs">
+            <div className="space-y-2 pt-1 font-mono text-xs">
               <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex justify-between items-center">
-                <div><h4 className="font-bold text-[#0a1410]">Police Control Room</h4><p className="text-[10px] text-stone-500">Emergency Police Line: 112</p></div>
-                <a href="tel:112" className="bg-red-700 text-white font-bold py-1.5 px-3 rounded-lg">Call 112</a>
+                <div><h4 className="font-bold text-[#081710] text-xs">Police Control Room</h4><p className="text-[10px] text-stone-500">Emergency Police Line: 112</p></div>
+                <a href="tel:112" className="bg-red-700 hover:bg-red-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition">Call 112</a>
               </div>
               <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex justify-between items-center">
-                <div><h4 className="font-bold text-[#0a1410]">Ambulance Service</h4><p className="text-[10px] text-stone-500">Medical Trauma: 108</p></div>
-                <a href="tel:108" className="bg-red-700 text-white font-bold py-1.5 px-3 rounded-lg">Call 108</a>
+                <div><h4 className="font-bold text-[#081710] text-xs">Ambulance Service</h4><p className="text-[10px] text-stone-500">Medical Trauma: 108</p></div>
+                <a href="tel:108" className="bg-red-700 hover:bg-red-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition">Call 108</a>
               </div>
               <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex justify-between items-center">
-                <div><h4 className="font-bold text-[#0a1410]">Forest Wildlife Checkpost</h4><p className="text-[10px] text-stone-500">Kaimur Wildlife Division</p></div>
-                <a href="tel:+915444222268" className="bg-stone-800 text-white font-bold py-1.5 px-3 rounded-lg">Call Checkpost</a>
+                <div><h4 className="font-bold text-[#081710] text-xs">Forest Wildlife Checkpost</h4><p className="text-[10px] text-stone-500">Kaimur Wildlife Division</p></div>
+                <a href="tel:+915444222268" className="bg-stone-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition">Call Checkpost</a>
               </div>
               <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex justify-between items-center">
-                <div><h4 className="font-bold text-[#0a1410]">Son Adventure Verified Desk</h4><p className="text-[10px] text-stone-500">+91 73550 53822</p></div>
-                <a href="tel:+917355053822" className="bg-emerald-800 text-white font-bold py-1.5 px-3 rounded-lg">Call Desk</a>
+                <div><h4 className="font-bold text-[#081710] text-xs">Son Adventure Verified Desk</h4><p className="text-[10px] text-stone-500">+91 73550 53822</p></div>
+                <a href="tel:+917355053822" className="bg-emerald-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition">Call Desk</a>
               </div>
             </div>
           </div>

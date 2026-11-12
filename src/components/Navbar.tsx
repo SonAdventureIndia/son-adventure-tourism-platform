@@ -8,14 +8,14 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
 
   return (
     <>
-      {/* 1. TOP LIVE TICKER */}
-      <div className="bg-[#0a1410] text-white text-[11px] font-mono py-1.5 px-4 flex flex-wrap justify-between items-center gap-2 border-b border-emerald-900/40">
+      {/* 1. TOP STATUS TICKER */}
+      <div className="bg-[#081710] text-white text-[11px] font-mono py-1.5 px-4 flex flex-wrap justify-between items-center gap-2 border-b border-emerald-900/40">
         <div className="flex items-center space-x-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-amber-400 font-bold uppercase tracking-wider text-[10px]">SONBHADRA OFFICIAL RADAR</span>
+          <span className="text-amber-400 font-bold uppercase tracking-wider text-[10px]">SONBHADRA EXPEDITION DESK</span>
           <span className="hidden sm:inline text-stone-300">· 24.6856° N, 83.0689° E</span>
         </div>
-        <div className="flex items-center space-x-4 text-xs">
+        <div className="ml-auto flex items-center space-x-3 text-xs">
           <span className="text-stone-300">Helpline: +91 73550 53822</span>
           {onOpenSos ? (
             <button 
@@ -39,7 +39,7 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
       <nav className="sticky top-0 z-40 bg-[#fcfaf6]/95 backdrop-blur-md border-b border-stone-200/90 px-4 sm:px-6 py-3">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-1.5 group">
-            <span className="font-serif font-black text-2xl tracking-tight text-[#0a1410]">
+            <span className="font-serif font-black text-2xl tracking-tight text-[#081710]">
               SON<span className="text-[#c85a32] italic">ADVENTURE</span>
             </span>
           </Link>
@@ -60,7 +60,7 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
             {onOpenCompass && (
               <button 
                 onClick={onOpenCompass}
-                className="hidden sm:inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-[#0a1410] bg-white border border-stone-300 py-1.5 px-3 rounded-lg shadow-sm hover:border-[#c85a32] transition"
+                className="hidden sm:inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-[#081710] bg-white border border-stone-300 py-1.5 px-3 rounded-lg shadow-sm hover:border-[#c85a32] transition"
               >
                 <i className="fas fa-compass text-[#c85a32]" />
                 <span>Compass</span>
@@ -69,7 +69,7 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
 
             <Link 
               href="/experiences"
-              className="bg-[#0a1410] hover:bg-[#1b432e] text-white py-1.5 px-3.5 rounded-lg text-xs font-mono font-bold transition shadow-sm"
+              className="bg-[#081710] hover:bg-[#112d1f] text-white py-1.5 px-3.5 rounded-lg text-xs font-mono font-bold transition shadow-sm"
             >
               Book Trail
             </Link>
@@ -88,9 +88,9 @@ export default function Navbar({ onOpenCompass, onOpenSos }: { onOpenCompass?: (
 
       {/* MOBILE DRAWER */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed top-[55px] left-0 right-0 z-50 bg-[#0a1410]/98 border-b border-amber-500/30 p-5 space-y-2.5 shadow-2xl animate-in slide-in-from-top-2">
+        <div className="lg:hidden fixed top-[55px] left-0 right-0 z-50 bg-[#081710]/98 border-b border-amber-500/30 p-5 space-y-2.5 shadow-2xl animate-in slide-in-from-top-2">
           <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-xs font-mono font-bold text-white border-b border-stone-800">
-            🏠 01. Flagship Home (Live Telemetry & Map)
+            🏠 01. Flagship Home (Spot-Switcher & Telemetry)
           </Link>
           <Link href="/destinations" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-xs font-mono font-bold text-white border-b border-stone-800">
             🏔️ 02. Destinations Directory
